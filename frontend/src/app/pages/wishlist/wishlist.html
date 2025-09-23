@@ -1,0 +1,30 @@
+<div class="max-w-[1200px] m-auto">
+  <h1 class="title-3 md:title-1 mb-6">Votre wishlist</h1>
+
+  @if (isLoading()) {
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"
+    >
+      @for (_ of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]; track $index) {
+        <app-product-card-skeleton></app-product-card-skeleton>
+      }
+    </div>
+  } @else if (wishlist()?.length === 0) {
+    <p class="text-neutral-700">Vous n'avez mis aucun produit en favoris</p>
+  } @else {
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4"
+    >
+      @for (item of wishlist(); track item) {
+        <app-product-card
+          [product]="item"
+          (productClick)="viewProduct($event)"
+          (viewDetails)="viewProduct($event)"
+          [isInWishlist]="true"
+          (toggleWishlist)="toggleWishlist($event)"
+        >
+        </app-product-card>
+      }
+    </div>
+  }
+</div>

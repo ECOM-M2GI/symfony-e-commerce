@@ -1,0 +1,101 @@
+<div class="max-w-[800px] mx-auto px-4 py-8">
+  <div class="flex flex-col items-center justify-center min-h-[60vh]">
+    @if (isLoading()) {
+      <!-- Loading State -->
+      <div class="card bg-white rounded-3xl shadow-lg p-8 w-full max-w-md text-center">
+        <div class="flex flex-col items-center">
+          <div class="loading loading-spinner loading-lg text-warning mb-6"></div>
+          <h2 class="title-3 mb-4 text-neutral-700">Vérification de votre paiement...</h2>
+          <p class="body-3 text-neutral-500">
+            Veuillez patienter pendant que nous confirmons votre transaction
+          </p>
+        </div>
+      </div>
+    } @else if (paymentStatus() === 'complete') {
+      <!-- Success State -->
+      <div class="card bg-white rounded-3xl shadow-lg p-8 w-full text-center">
+        <div class="flex flex-col items-center">
+          <!-- Success Icon -->
+          <div class="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mb-6">
+            <svg
+              class="w-12 h-12 text-success"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+          </div>
+
+          <h1 class="title-2 mb-4 text-success">Paiement réussi !</h1>
+
+          <div class="space-y-3 mb-8">
+            <p class="body-2 text-neutral-600">
+              Merci pour votre achat. Votre commande a été confirmée.
+            </p>
+            <p class="body-3 text-neutral-500">
+              Vous recevrez un email de confirmation sous peu avec tous les détails de votre
+              commande.
+            </p>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 w-full">
+            <button class="btn btn-warning btn-lg flex-1" (click)="goToAccount()">
+              Voir mes commandes
+            </button>
+            <button class="btn btn-outline btn-lg flex-1" (click)="continueShopping()">
+              Continuer mes achats
+            </button>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <!-- Error State -->
+      <div class="card bg-white rounded-3xl shadow-lg p-8 w-full text-center">
+        <div class="flex flex-col items-center">
+          <!-- Error Icon -->
+          <div class="w-20 h-20 bg-error/10 rounded-full flex items-center justify-center mb-6">
+            <svg class="w-12 h-12 text-error" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"
+              ></path>
+            </svg>
+          </div>
+
+          <h1 class="title-2 mb-4 text-error">Échec du paiement</h1>
+
+          <div class="space-y-3 mb-8">
+            <p class="body-2 text-neutral-600">
+              Il y a eu un problème lors du traitement de votre paiement.
+            </p>
+            <p class="body-3 text-neutral-500">
+              L'article que vous avez commandé est peut-être en rupture de stock ou votre carte a
+              été refusée.<br />
+              Veuillez réessayer ou contacter notre support client si le problème persiste.<br />
+              Vous n'avez pas été facturé.
+            </p>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 w-full">
+            <button class="btn btn-error btn-lg flex-1" (click)="continueShopping()">
+              Retour à l'accueil
+            </button>
+            <button class="btn btn-outline btn-lg flex-1" (click)="goToCart()">
+              Retour au panier
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

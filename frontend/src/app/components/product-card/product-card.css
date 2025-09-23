@@ -1,0 +1,48 @@
+/* Product card specific styles */
+
+/* Line clamp utility for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Smooth transitions for interactive elements */
+.transition-shadow {
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+.transition-transform {
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Product card hover effects */
+.product-card {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Badge styles */
+.condition-badge {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+/* Price display */
+.price-display {
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  font-weight: 700;
+}
+
+/* Button hover effects */
+.btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Image hover effects */
+.product-card img:hover {
+  transform: scale(1.05);
+}

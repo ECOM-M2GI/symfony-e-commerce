@@ -1,0 +1,61 @@
+<div class="flex h-full max-w-[1000px] m-auto relative">
+  <!-- Sidebar - Show skeleton during initial loading -->
+  <div class="w-1/4 h-fit sticky top-0">
+    @if (isInitialLoading()) {
+      <app-account-sidebar-skeleton></app-account-sidebar-skeleton>
+    } @else {
+      <div class="card bg-white rounded-2xl p-5 shadow-lg border-b border-base-300 mt-10">
+        <h1 class="text-xl font-semibold tracking-tight">Vos informations</h1>
+        <nav class="mt-5">
+          @for (keypar of tabs; track $index) {
+            <h2>
+              <button
+                type="button"
+                class="btn btn-ghost btn-sm md:btn-md mt-1 w-full justify-start rounded-lg transition-colors"
+                (click)="setCurrentTab(keypar.key)"
+                [ngClass]="
+                  currentTab === keypar.key
+                    ? 'bg-app-beige/70 text-neutral shadow-md'
+                    : 'hover:bg-base-100'
+                "
+                [attr.aria-current]="currentTab === keypar.key ? 'page' : null"
+              >
+                {{ keypar.value }}
+              </button>
+            </h2>
+          }
+        </nav>
+      </div>
+    }
+  </div>
+
+  <!-- Main content area -->
+  <div class="w-3/4">
+    @if (isInitialLoading()) {
+      <!-- Show profile skeleton during initial loading -->
+      <app-account-profile-skeleton></app-account-profile-skeleton>
+    } @else {
+      @switch (currentTab) {
+        @case ('profile') {
+          <app-account-profile
+            [userProfile]="userProfile()"
+            (outputEditProfile)="editProfilte($event)"
+            (logoutEvent)="logout()"
+          ></app-account-profile>
+        }
+        @case ('purchases') {
+          <app-account-product-line
+            [productsList]="userPurchases()"
+            salesOrPurchases="purchases"
+          ></app-account-product-line>
+        }
+        @case ('sales') {
+          <app-account-product-line
+            [productsList]="userSales()"
+            salesOrPurchases="sales"
+          ></app-account-product-line>
+        }
+      }
+    }
+  </div>
+</div>

@@ -1,0 +1,57 @@
+<div class="flex w-full flex-col items-center">
+  <div class="flex flex-col card bg-white rounded-[24px] w-2/3 min-h-[600px] items-center p-8">
+    <h2 class="title-2 md:title-1 mb-6 text-center">Payement Sécurisé</h2>
+
+    <!-- Loading State -->
+    <app-loading [isLoading]="isLoading()">
+      <!-- Error State -->
+      @if (error()) {
+        <div class="w-full max-w-md mx-auto text-center">
+          <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+            <div class="flex items-center justify-center mb-4">
+              <svg
+                class="w-12 h-12 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-red-800 mb-2">Une erreur est survenue.</h3>
+            <p class="text-red-600 mb-4">{{ error() }}</p>
+          </div>
+          <button type="button" class="btn btn-error mr-4" (click)="initializeStripeCheckout()">
+            Réinitialiser Stripe
+          </button>
+        </div>
+      }
+      <!-- Stripe Checkout Container -->
+      <div class="w-full max-w-2xl mx-auto">
+        <div #checkoutContainer id="checkoutContainer" class="stripe-checkout-container">
+          <!-- Stripe embedded checkout will be mounted here -->
+        </div>
+
+        <!-- Additional Information -->
+        <div class="mt-6 text-center">
+          <p class="text-sm text-gray-600">
+            Nous utilisons Stripe pour sécuriser vos paiements en ligne, vos informations bancaires
+            ne sont jamais stockées sur nos serveurs.
+          </p>
+          <button
+            type="button"
+            class="mt-4 text-blue-600 hover:text-blue-800 underline"
+            (click)="goBackToCart()"
+          >
+            ← Retour au Panier
+          </button>
+        </div>
+      </div>
+    </app-loading>
+  </div>
+</div>

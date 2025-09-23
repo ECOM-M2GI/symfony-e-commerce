@@ -1,0 +1,14 @@
+.profile-form>div {
+    display: flex;
+    gap: 0 1rem;
+}
+
+.profile-form>div>div {
+    display: flex;
+    flex-direction: column;
+    flex-basis: 50%;
+}
+
+/* .profile-form input.text-input:not([disabled]) {
+    border: solid 1px var(--color-gray-600);
+} */

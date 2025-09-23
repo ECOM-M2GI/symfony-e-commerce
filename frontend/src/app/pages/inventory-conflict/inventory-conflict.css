@@ -1,0 +1,31 @@
+/* Inventory Conflict Page Styles */
+
+.card {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.btn-black {
+  @apply bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors duration-200 font-medium;
+}
+
+.btn-outline {
+  @apply border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors duration-200 font-medium;
+}
+
+.title-1 {
+  @apply text-3xl font-bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .title-1 {
+    @apply text-2xl;
+  }
+}

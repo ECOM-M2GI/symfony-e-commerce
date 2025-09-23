@@ -1,0 +1,106 @@
+<app-loading [isLoading]="userProfile() === undefined">
+  <div class="card bg-white shadow-lg p-6 md:p-8 gap-x-4 max-w-3xl mx-auto rounded-2xl ml-4 mt-10">
+    <div class="flex justify-between items-center border-b border-base-300 pb-5">
+      <div class="flex items-center gap-x-4">
+        <div class="w-12 h-12 bg-primary/90 rounded-full flex items-center justify-center shadow">
+          <span class="text-sky-500 font-semibold text-lg">
+            {{ (userProfile()?.username || 'U').charAt(0).toUpperCase() }}
+          </span>
+        </div>
+        <h3 class="text-lg md:text-xl font-semibold leading-tight">
+          {{ userProfile()?.username }}
+        </h3>
+      </div>
+      <button (click)="logout()" class="btn btn-ghost btn-error ml-4 hover:shadow">
+        Se déconnecter
+      </button>
+    </div>
+    <form [formGroup]="profileForm" (ngSubmit)="editProfile()" #profileFormEl ngNativeValidate>
+      <div class="w-full profile-form space-y-6">
+        <div class="mt-5">
+          <div>
+            <label class="label-text font-medium mb-1" [for]="fieldNames.first_name">Prénom</label>
+            <input
+              type="text"
+              class="input input-bordered w-full focus-visible:ring-2 focus-visible:ring-primary/60 focus:border-primary"
+              placeholder="Non défini"
+              formControlName="first_name"
+              [id]="fieldNames.first_name"
+            />
+          </div>
+          <div>
+            <label class="label-text font-medium mb-1" [for]="fieldNames.last_name">Nom </label>
+            <input
+              type="text"
+              class="input input-bordered w-full focus-visible:ring-2 focus-visible:ring-primary/60 focus:border-primary"
+              placeholder="Non défini"
+              [id]="fieldNames.last_name"
+              formControlName="last_name"
+            />
+          </div>
+        </div>
+        <div class="mt-5">
+          <div>
+            <label class="label-text font-medium mb-1" [for]="fieldNames.email">Email</label>
+            <input
+              type="mail"
+              [id]="fieldNames.email"
+              class="input input-bordered w-full focus-visible:ring-2 focus-visible:ring-primary/60 focus:border-primary"
+              placeholder="Non défini"
+              formControlName="email"
+            />
+          </div>
+          <div>
+            <label class="label-text font-medium mb-1" [for]="fieldNames.phone_number"
+              >Numéro de téléphone</label
+            >
+            <input
+              type="tel"
+              pattern="[0-9]{10}"
+              maxlength="10"
+              [id]="fieldNames.phone_number"
+              class="input input-bordered w-full focus-visible:ring-2 focus-visible:ring-primary/60 focus:border-primary"
+              placeholder="Non défini"
+              formControlName="phone_number"
+            />
+          </div>
+        </div>
+        <div class="mt-5">
+          <div>
+            <label class="label-text font-medium mb-1" [for]="fieldNames.address">Adresse</label>
+            <input
+              type="text"
+              [id]="fieldNames.address"
+              class="input input-bordered w-full focus-visible:ring-2 focus-visible:ring-primary/60 focus:border-primary"
+              placeholder="Non défini"
+              formControlName="address"
+            />
+          </div>
+          <div>
+            <label class="label-text font-medium mb-1" [for]="fieldNames.date_of_birth"
+              >Date de naissance</label
+            >
+            <input
+              type="date"
+              [id]="fieldNames.date_of_birth"
+              class="input input-bordered w-full focus-visible:ring-2 focus-visible:ring-primary/60 focus:border-primary"
+              placeholder="Non défini"
+              formControlName="date_of_birth"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-8 w-full text-right space-x-2">
+        @if (!isEditing()) {
+          <button (click)="triggerEdit()" type="button" class="btn btn-neutral hover:btn-warning">
+            Modifier le profil
+          </button>
+        } @else {
+          <button (click)="cancelEdit()" type="button" class="btn btn-error">Annuler</button>
+          <button type="submit" class="btn btn-warning ml-2">Enregistrer</button>
+        }
+      </div>
+    </form>
+  </div>
+</app-loading>

@@ -1,0 +1,16 @@
+<div class="card bg-base-100 w-62 shadow-sm">
+  <a routerLink="/products/{{ product().id }}" class="p-2 hover:bg-black/5" aria-label="Panier">
+    <figure>
+      <img src="{{ product().image_url }}" class="max-h-48 w-auto object-contain" alt="Shoes" />
+    </figure>
+    <div class="card-body">
+      <h2 class="card-title">{{ product().name }}</h2>
+      <p> {{ product().description}}
+      </p>
+      <div class="mt-4 flex items-center justify-between">
+        <span class="text-base font-semibold text-neutral-900 p-2">{{ product().price }}€</span> <button
+          class="btn btn-accent">Achetez</button>
+      </div>
+    </div>
+  </a>
+</div>

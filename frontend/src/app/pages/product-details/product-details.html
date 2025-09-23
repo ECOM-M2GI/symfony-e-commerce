@@ -1,0 +1,377 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Loading State -->
+  @if (isLoading()) {
+  <div class="flex justify-center items-center min-h-screen">
+    <span class="loading loading-spinner loading-lg text-primary"></span>
+  </div>
+  } @else if (errorMessage()) {
+  <div class="flex flex-col justify-center items-center min-h-screen">
+    <div class="text-center">
+      <svg
+        class="w-16 h-16 mx-auto text-gray-400 mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
+      <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ errorMessage() }}</h2>
+      <p class="text-gray-600 mb-6">
+        Le produit que vous recherchez n'existe pas ou n'est plus disponible.
+      </p>
+      <button class="btn btn-primary" (click)="goBack()">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+          ></path>
+        </svg>
+        Retour aux produits
+      </button>
+    </div>
+  </div>
+  } @else if (product()) {
+  <!-- Breadcrumbs -->
+  <div class="ml-6 breadcrumbs text-sm">
+    <ul>
+      <li><a (click)="goBack()">Produits</a></li>
+      <li>
+        <a (click)="goCategory(product()?.category || '')">{{
+          getCategoryDisplayName(product()?.category || '')
+        }}</a>
+      </li>
+      <li>{{ product()?.name }}</li>
+    </ul>
+  </div>
+
+  <!-- Main Product Content -->
+  <div class="mx-auto px-4 py-4">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+      <!-- Left Column - Product Image -->
+      <div class="space-y-4">
+        <div class="aspect-square rounded-s-sm overflow-hidden bg-white shadow-lg">
+          <img
+            [src]="product()?.image_url"
+            [alt]="product()?.name"
+            class="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+
+        <!-- Additional product images would go here in a real implementation -->
+        <div class="hidden lg:flex space-x-2">
+          <div class="w-20 h-20 rounded-s-md overflow-hidden shadow-lg">
+            <img
+              [src]="product()?.image_url"
+              [alt]="product()?.name"
+              class="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Product Information -->
+      <div class="space-y-6">
+        <!-- Product Title and Condition -->
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <span
+              class="badge text-xs font-medium px-3 py-1"
+              [class]="getConditionClasses(product()?.condition || '')"
+            >
+              {{ getConditionText(product()?.condition || '') }}
+            </span>
+            @if (product()?.stock_quantity === 0) {
+            <span class="badge badge-neutral text-xs">Rupture de stock</span>
+            } @else if (product()?.stock_quantity && product()!.stock_quantity <= 10) {
+            <span class="badge badge-error text-xs">
+              Plus que {{ product()?.stock_quantity }} en stock
+            </span>
+            }
+          </div>
+          <h1 class="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
+            {{ product()?.name }}
+          </h1>
+        </div>
+
+        <div class="border-t border-gray-200 my-4"></div>
+        <!-- Seller Information -->
+        <div class="bg-gray-50 rounded-lg px-4 py-1">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
+              <span class="text-sky-500 font-semibold text-xl">
+                {{ (product()?.created_by_username || 'U').charAt(0).toUpperCase() }}
+              </span>
+            </div>
+            <div>
+              <div class="font-medium text-gray-900">{{ product()?.created_by_username }}</div>
+              <div class="text-sm text-gray-500">Vendeur</div>
+            </div>
+          </div>
+        </div>
+        <div class="border-t border-gray-200 my-4"></div>
+
+        <!-- Purchase Card -->
+        <div class="bg-white rounded-s-md p-6 shadow-lg lg:top-20">
+          <div class="space-y-4">
+            <!-- Price -->
+            <div class="flex items-baseline gap-2">
+              <span class="text-4xl font-bold text-gray-900"
+                >{{ product()?.price | number : '1.2-2' }}€</span
+              >
+              <span class="text-lg text-gray-500">l'unité</span>
+            </div>
+
+            <!-- Delivery -->
+            @if (product()?.delivery_mode === 'hand_to_hand') {
+            <div class="flex items-center text-sm text-green-600 font-medium">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              {{ getDeliveryModeText(product()?.delivery_mode || '') }}
+            </div>
+            } @else { @if (product()?.shipping_fee && product()!.shipping_fee > 0) {
+            <div class="flex items-center text-sm text-gray-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 7h13v10H3V7zm13 0h4l1 5v5h-5V7zM5 21h2a2 2 0 100-4H5a2 2 0 100 4zm12 0h2a2 2 0 100-4h-2a2 2 0 100 4z"
+                />
+              </svg>
+              + {{ product()?.shipping_fee }}€ de livraison ({{
+                getDeliveryModeText(product()?.delivery_mode || '')
+              }})
+            </div>
+            } @else {
+            <div class="flex items-center text-sm text-green-600 font-medium">
+              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+              Livraison gratuite ({{ getDeliveryModeText(product()?.delivery_mode || '') }})
+            </div>
+            } }
+
+            <div class="divider my-2"></div>
+
+            <!-- Quantity -->
+            @if (isUserProductOwner()) {
+            <p class="text-sm font-medium text-gray-700">
+              Stock du produit : {{ product()?.stock_quantity }}
+            </p>
+            } @else {
+            <div class="flex items-center space-x-4">
+              <span class="text-sm font-medium text-gray-700">Quantité:</span>
+              <div class="flex items-center">
+                <button
+                  class="btn btn-sm btn-outline btn-square"
+                  [disabled]="quantity() <= 1"
+                  (click)="decreaseQuantity()"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M20 12H4"
+                    />
+                  </svg>
+                </button>
+                <input
+                  type="number"
+                  class="input input-bordered input-sm mx-2 w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none m-0 pr-5"
+                  [value]="quantity()"
+                  (input)="onQuantityChange($event)"
+                  min="1"
+                  [max]="product()?.stock_quantity || 0"
+                  placeholder="1"
+                />
+                <button
+                  class="btn btn-sm btn-outline btn-square"
+                  [disabled]="quantity() >= (product()?.stock_quantity || 0)"
+                  (click)="increaseQuantity()"
+                >
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <span class="text-sm text-gray-500">
+                ({{ product()?.stock_quantity }} disponible{{
+                  product()!.stock_quantity > 1 ? 's' : ''
+                }})
+              </span>
+            </div>
+            }
+
+            <!-- Somme -->
+            @if (quantity() > 1 || (product()?.shipping_fee && product()!.shipping_fee > 0)) {
+            <div class="pt-1">
+              <div class="flex justify-between items-center text-lg font-semibold">
+                <span>Total:</span>
+                <span class="text-4xl font-bold text-gray-900"
+                  >{{ totalPrice() | number : '1.2-2' }}€</span
+                >
+              </div>
+            </div>
+            }
+
+            <!-- BUTTONS -->
+            @if (isUserProductOwner()) {
+            <a routerLink="/sell" class="block w-full mt-2">
+              <button class="btn btn-neutral w-full">Voir vos produits</button>
+            </a>
+            } @else {
+            <div class="grid gap-2 pt-2">
+              @if (isBuyingNow()) {
+              <button class="btn btn-warning btn-block" disabled>
+                <span class="loading loading-spinner loading-sm"></span>
+                Achat en cours...
+              </button>
+              } @else {
+              <button
+                class="btn btn-warning btn-block"
+                [disabled]="!product()?.is_active || (product()?.stock_quantity || 0) === 0"
+                (click)="buyNow()"
+              >
+                Achat immédiat
+              </button>
+              }
+
+              <!-- Ajouter au panier -->
+              @if (isAddingToCart()) {
+              <button class="btn btn-warning btn-block" disabled>
+                <span class="loading loading-spinner loading-sm"></span>
+                Ajout en cours...
+              </button>
+              } @else {
+              <button
+                class="btn btn-warning btn-block"
+                [disabled]="!product()?.is_active || (product()?.stock_quantity || 0) === 0"
+                (click)="addToCart()"
+              >
+                Ajouter au panier
+              </button>
+              }
+              <br />
+
+              <!-- Wishlist -->
+              @if (wishlisted() !== undefined) { @if (isTogglingWishlist()) {
+              <button class="btn btn-ghost btn-block" disabled>
+                <span class="loading loading-spinner loading-sm"></span>
+                Mise à jour...
+              </button>
+              } @else {
+              <button class="btn btn-ghost btn-block" (click)="toggleWishlist()">
+                <svg
+                  class="w-5 h-5 mr-2"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  [ngClass]="{
+                            'stroke-error': wishlisted(),
+                            'stroke-current': !wishlisted(),
+                          }"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
+                </svg>
+                {{ wishlisted() ? 'Retirer de la wishlist' : 'Ajouter à la wishlist' }}
+              </button>
+              } } @else {
+              <button class="btn btn-ghost btn-block btn-disabled text-gray-400" disabled>
+                <span class="loading loading-spinner loading-lg"></span>
+              </button>
+              }
+            </div>
+            }
+
+            <!-- Unavailable -->
+            @if (!product()?.is_active || (product()?.stock_quantity || 0) === 0) {
+            <p class="text-sm text-gray-500 text-center pt-1">
+              Ce produit n'est actuellement pas disponible à l'achat.
+            </p>
+            }
+          </div>
+        </div>
+
+        <!-- Product Description -->
+        @if (product()?.description) {
+        <div class="bg-white rounded-lg p-6 shadow-lg">
+          <h3 class="text-lg font-semibold text-gray-900 mb-3">Description</h3>
+          <p class="text-gray-700 leading-relaxed">{{ product()?.description }}</p>
+        </div>
+        }
+
+        <!-- Product Details -->
+
+        <div class="bg-white rounded-s-md p-6 shadow-lg">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Détails du produit</h3>
+          <dl class="grid grid-cols-1 gap-3 text-sm">
+            <div class="flex justify-between">
+              <dt class="text-gray-600">État:</dt>
+              <dd class="font-medium text-gray-900">
+                {{ getConditionText(product()?.condition || '') }}
+              </dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-gray-600">Mode de livraison:</dt>
+              <dd class="font-medium text-gray-900">
+                {{ getDeliveryModeText(product()?.delivery_mode || '') }}
+              </dd>
+            </div>
+            <div class="flex justify-between">
+              <dt class="text-gray-600">Stock disponible:</dt>
+              <dd class="font-medium text-gray-900">
+                {{ product()?.stock_quantity }} article{{
+                  product()!.stock_quantity > 1 ? 's' : ''
+                }}
+              </dd>
+            </div>
+            @if (product()?.created_at) {
+            <div class="flex justify-between">
+              <dt class="text-gray-600">Publié le:</dt>
+              <dd class="font-medium text-gray-900">
+                {{ product()?.created_at | date : 'dd/MM/yyyy' }}
+              </dd>
+            </div>
+            }
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+</div>

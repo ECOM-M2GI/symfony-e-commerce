@@ -1,0 +1,40 @@
+.inline-btn-blue {
+  color: #1447e6;
+}
+
+.inline-btn-blue:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.inline-btn-blue:disabled {
+  color: gray;
+  cursor: default;
+}
+
+.inline-btn-blue:hover:disabled {
+  text-decoration: none;
+}
+
+/* Stripe Embedded Checkout Styles */
+.stripe-checkout-container {
+  width: 100%;
+  min-height: 400px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Ensure Stripe Elements have proper styling */
+.stripe-checkout-container iframe {
+  border-radius: 8px;
+}
+
+/* Loading state for checkout container */
+.stripe-checkout-container:empty::before {
+  content: 'Initialisaion de Stripe...';
+  display: block;
+  text-align: center;
+  padding: 2rem;
+  color: #6b7280;
+  font-style: italic;
+}

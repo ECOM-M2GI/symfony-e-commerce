@@ -1,0 +1,196 @@
+<header class="sticky top-0 z-50 bg-app-beige">
+  <div class="ml-08 content-gutter h-24 flex items-center gap-6">
+    <!-- Logo -->
+    <a
+      routerLink="/"
+      class="shrink-0 select-none focus:outline-none focus:ring-0 no-tap-highlight"
+      aria-label="Retour à l'accueil Ebey"
+    >
+      <img
+        class="h-42 mt-3 aspect-square cursor-pointer select-none"
+        src="img/logo_sans_background.svg"
+        alt="Retour à l'accueil Ebey"
+        draggable="false"
+      />
+    </a>
+    <form
+      class="w-1/2 flex-initial"
+      (submit)="onSearch(searchInput.value); $event.preventDefault()"
+    >
+      <label class="relative block">
+        <input
+          #searchInput
+          type="search"
+          placeholder="Rechercher sur Ebey"
+          class="w-full h-12 rounded-full bg-white text-neutral-900 placeholder:text-neutral-500 pl-5 pr-12 outline-none shadow-lg"
+          aria-label="Rechercher"
+        />
+        <button
+          type="submit"
+          class="absolute right-1 top-1/2 -translate-y-1/2 grid place-items-center w-10 h-10 rounded-full hover:bg-black/5"
+          aria-label="Rechercher"
+        >
+          <!-- lupa -->
+          <svg
+            class="w-6 h-6"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+          >
+            <circle cx="11" cy="11" r="6"></circle>
+            <path d="M20 20l-3.5-3.5" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </label>
+    </form>
+
+    <!-- Espace Vendeur -->
+    <a
+      routerLink="/sell"
+      aria-label="Espace Vendeur"
+      class="hidden md:inline-flex group items-center gap-3 h-12 px-6 rounded-full btn btn-primary shadow-lg hover:shadow-lg transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+    >
+      <span class="text-lg font-semibold">Espace Vendeur</span>
+
+      <span
+        class="grid place-items-center w-9 h-9 rounded-full bg-white text-neutral border border-white/30 transition-all duration-200 group-hover:scale-105 group-hover:border-white/60"
+      >
+        <svg
+          class="w-4 h-4 transition-transform duration-200 group-hover:rotate-90"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          />
+        </svg>
+      </span>
+    </a>
+
+    <!-- Right icons -->
+    <div class="flex basis-1/3 justify-end items-center gap-2">
+      <!-- panier -->
+      <div class="indicator">
+        @if (countCart() > 0) {
+        <span class="indicator-item indicator-end indicator-top">
+          <span class="badge badge-sm badge-primary">
+            {{ countCart() <= 99 ? countCart() : '99+' }}
+          </span>
+        </span>
+        }
+        <a routerLink="/cart" class="p-2 rounded-full hover:bg-black/5" aria-label="Panier">
+          <svg
+            class="w-7 h-7"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M3 3h2l1.5 12H19.5l1.5-9H5.4"></path>
+            <circle cx="9" cy="20" r="1.6"></circle>
+            <circle cx="17" cy="20" r="1.6"></circle>
+          </svg>
+        </a>
+      </div>
+      <!-- heart -->
+      <div class="indicator">
+        @if (countWishlist() > 0) {
+        <span class="indicator-item indicator-end indicator-top">
+          <span class="badge badge-sm badge-primary">
+            {{ countWishlist() <= 99 ? countWishlist() : '99+' }}
+          </span>
+        </span>
+        }
+        <a routerLink="/wishlist" class="p-2 rounded-full hover:bg-black/5" aria-label="Favoris">
+          <svg
+            class="w-7 h-7"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M20.8 8.4c0-2.5-2-4.4-4.5-4.4-1.8 0-3.3.9-4.3 2.3C10 4.9 8.5 4 6.8 4 4.3 4 2.3 6 2.3 8.4 2.3 13.1 8 17 12 20c4-3 8.8-6.9 8.8-11.6z"
+            />
+          </svg>
+        </a>
+      </div>
+      <!-- user -->
+      <a routerLink="/account" class="p-2 rounded-full hover:bg-black/5" aria-label="Compte">
+        <svg
+          class="w-7 h-7"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="12" cy="8" r="3.5"></circle>
+          <path d="M4 20c0-4 4-6 8-6s8 2 8 6"></path>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <!-- Bottom categories -->
+  <nav class="bg-base-100 text-base-content shadow-sm">
+    <div
+      class="content-gutter h-12 flex justify-center items-center gap-4 overflow-x-auto whitespace-nowrap"
+    >
+      @for (cat of categoryKeys; track cat) {
+      <a
+        href="#"
+        class="shrink-0 inline-flex items-center px-3 py-2 body-2 no-underline hover:no-underline rounded-lg transition-shadow hover:shadow-sm hover:bg-white"
+        (click)="onCategory(cat); $event.preventDefault()"
+      >
+        {{ category[cat] }}
+      </a>
+      }
+    </div>
+  </nav>
+
+  <!-- POPUP ALERT -->
+  @if (notify.alert(); as a) {
+  <div class="toast toast-center toast-top w-100">
+    <div
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
+      [@fadeSlide]
+      class="alert cursor-pointer select-none max-w-md"
+      [ngClass]="{
+          'alert-error': a.kind === 'error',
+          'alert-success': a.kind === 'success',
+          'alert-warning': a.kind === 'warning',
+          'alert-info': a.kind === 'info',
+        }"
+      (click)="close()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>{{ a.text }}</span>
+    </div>
+  </div>
+  }
+</header>

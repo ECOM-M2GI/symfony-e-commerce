@@ -1,0 +1,12 @@
+.tab-account {
+    background-color: transparent;
+    color: var(--color-info-content)
+}
+
+.tab-account:hover {
+    background-color: var(--color-gray-100);
+}
+
+.current-tab {
+    background-color: var(--color-app-beige);
+}

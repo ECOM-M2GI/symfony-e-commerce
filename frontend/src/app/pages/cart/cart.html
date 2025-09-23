@@ -1,0 +1,243 @@
+<div class="max-w-[1200px] m-auto">
+  <h1 class="title-3 md:title-1 mb-6">Votre panier</h1>
+
+  @if (isLoading()) {
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Products list skeletons -->
+      <section class="lg:col-span-8 space-y-4">
+        @for (_ of [1, 2, 3]; track $index) {
+          <app-cart-item-skeleton></app-cart-item-skeleton>
+        }
+      </section>
+
+      <!-- Summary skeleton -->
+      <aside class="lg:col-span-4">
+        <app-cart-summary-skeleton></app-cart-summary-skeleton>
+      </aside>
+    </div>
+  } @else if (cart() === undefined || cart()?.items?.length === 0) {
+    <p class="text-neutral-700">Votre panier est vide</p>
+  } @else {
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Products list -->
+      <section class="lg:col-span-8 space-y-4">
+        @for (product of sortedCartItems(); track product.product_id) {
+          <article class="card bg-white rounded-3xl shadow-lg">
+            <!-- Seller -->
+            <div class="border-b border-base-300 flex justify-between items-center p-4 md:px-6">
+              <div class="text-sm">
+                <a class="font-medium">Vendu par :</a>
+                <span class="text-neutral-500 font-medium decoration-1">
+                  {{ product.seller_username }}
+                </span>
+              </div>
+              <span class="md:col-span-2 text-right text-sm text-neutral-600">
+                {{ product.current_stock }} en stock
+              </span>
+            </div>
+            <div class="card-body p-4 md:p-6">
+              <div class="flex gap-4">
+                <!-- product photo -->
+                <div class="shrink-0">
+                  <div class="w-24 h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-gray-100">
+                    <img
+                      [src]="product.product_image_url || 'https://placehold.co/300x300?text=Img'"
+                      [alt]="product.product_name"
+                      class="w-full h-full object-cover cursor-pointer"
+                      (click)="viewProduct(product.product_id)"
+                    />
+                  </div>
+                </div>
+                <!-- product details -->
+                <div class="flex flex-col justify-between flex-grow">
+                  <div class="">
+                    <span
+                      class="md:col-span-3 text-2xl font-semibold tracking-wider text-neutral-700"
+                    >
+                      <a
+                        class="hover:underline cursor-pointer decoration-info"
+                        (click)="viewProduct(product.product_id)"
+                      >
+                        {{ product.product_name || 'N/A' }}
+                      </a>
+                    </span>
+                    <!-- Condition -->
+                    <div class="text-sm">
+                      <div class="text-neutral-700">
+                        <span class="font-medium capitalize">{{
+                          displayCondition(product.condition)
+                        }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="hidden text-sm md:flex md:gap-1 md:flex-col md:items-start md:mb-2">
+                    <button
+                      type="button"
+                      class="link link-hover"
+                      (click)="addToWishlist(product.product_id)"
+                    >
+                      Mettre de côté
+                    </button>
+                    <button
+                      type="button"
+                      class="link link-hover text-error"
+                      (click)="removeFromCart(product.product_id)"
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Quantity Controls -->
+                <div class="text-right items-end justify-between">
+                  <div class="flex items-center gap-3 md:justify-end">
+                    <div class="text-sm text-neutral-600">Qté</div>
+                    <div class="flex items-center">
+                      <button
+                        class="btn btn-sm btn-outline btn-square"
+                        [disabled]="getDisplayQuantity(product.product_id) <= 1"
+                        (click)="decreaseQuantity(product.product_id)"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M20 12H4"
+                          />
+                        </svg>
+                      </button>
+                      <input
+                        type="number"
+                        class="input input-bordered input-sm w-16 text-center mx-2 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none pr-5"
+                        [value]="getDisplayQuantity(product.product_id)"
+                        (input)="
+                          onQuantityInputChange($event, product.product_id, product.current_stock)
+                        "
+                        min="1"
+                        [max]="product.current_stock || 999"
+                        placeholder="1"
+                      />
+                      <button
+                        class="btn btn-sm btn-outline btn-square"
+                        [disabled]="
+                          getDisplayQuantity(product.product_id) >= (product.current_stock || 0)
+                        "
+                        (click)="increaseQuantity(product.product_id, product.current_stock)"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="mt-2 md:mt-3 flex flex-col items-end">
+                    @if (isProductUpdating(product.product_id)) {
+                      <!-- Skeleton loader for price -->
+                      <div class="skeleton h-8 w-40 mb-2"></div>
+                      <div class="skeleton h-4 w-32 mb-2"></div>
+                      <div class="skeleton h-4 w-28"></div>
+                    } @else {
+                      <div class="text-2xl md:text-3xl font-semibold leading-none">
+                        {{ product.line_total }} €
+                      </div>
+
+                      <div class="text-xs md:text-sm text-neutral-500 mt-1">
+                        Prix unitaire : {{ product.unit_price }} €
+                      </div>
+                      @if (product.delivery_mode === 'hand_to_hand') {
+                        <div class="mt-2 text-xs md:text-sm">
+                          <div class="text-green-600 font-medium">Remise en main propre</div>
+                        </div>
+                      } @else {
+                        <div class="mt-2 text-xs md:text-sm">
+                          @if (isFreeShipping()) {
+                            <div class="text-green-600 font-medium">Livraison gratuite</div>
+                          } @else {
+                            <div class="text-neutral-500">
+                              Livraison : {{ product.product_shipping_fee }} €
+                            </div>
+                          }
+                        </div>
+                      }
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        }
+      </section>
+
+      <!-- Summary -->
+      <aside class="lg:col-span-4">
+        <div class="card bg-white rounded-3xl shadow-lg lg:sticky lg:top-6">
+          <div class="card-body p-5">
+            @if (hasUpdatingProducts()) {
+              <!-- Skeleton loaders for summary when updating -->
+              <dl class="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
+                <dt class="text-neutral-700">Objet</dt>
+                <dd class="bg-gray-200 skeleton h-4 w-40"></dd>
+
+                <dt class="text-neutral-700">Livraison</dt>
+                <dd class="bg-gray-200 skeleton h-4 w-32"></dd>
+
+                <dt class="mt-3 text-lg font-semibold">Total</dt>
+                <dd class="mt-3 bg-gray-200 skeleton h-8 w-60"></dd>
+              </dl>
+
+              <button class="btn btn-lg w-full mt-4" (click)="goCheckout()">
+                <span class="loading"></span>
+              </button>
+            } @else {
+              <dl class="grid grid-cols-[1fr_auto] gap-y-2 text-sm">
+                <dt class="text-neutral-700">Objet ({{ itemsCount() }})</dt>
+                <dd class="font-medium">{{ cart()!.grand_total }} EUR</dd>
+
+                <dt class="text-neutral-700">Livraison</dt>
+                <dd class="font-medium">
+                  {{ isFreeShipping() ? 'Gratuit' : cart()!.shipping_total + ' EUR' }}
+                </dd>
+
+                <dt class="mt-3 text-lg font-semibold">Total</dt>
+                <dd class="mt-3 text-2xl font-extrabold">{{ cart()!.grand_total }} EUR</dd>
+              </dl>
+
+              <button class="btn btn-warning btn-lg w-full mt-4" (click)="goCheckout()">
+                Finaliser l'achat
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- free shipping info  -->
+        <div
+          class="mt-4 p-4 rounded-2xl shadow-lg bg-white text-neutral-900 flex items-center gap-2"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-5 h-5 text-gray-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 7h13v10H3V7zm13 0h4l1 5v5h-5V7zM5 21h2a2 2 0 100-4H5a2 2 0 100 4zm12 0h2a2 2 0 100-4h-2a2 2 0 100 4z"
+            />
+          </svg>
+          <dt class="text-neutral-700">Livraison toujours gratuite à partir de 49€</dt>
+        </div>
+      </aside>
+    </div>
+  }
+</div>

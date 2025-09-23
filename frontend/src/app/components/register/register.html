@@ -1,0 +1,76 @@
+<form
+  [formGroup]="registerForm"
+  (ngSubmit)="register()"
+  #form
+  ngNativeValidate
+  class="p-6 max-w-[700px] m-auto"
+>
+  <h2 class="font-semibold text-2xl">Nouveau ici ?</h2>
+  <div class="flex gap-x-3 mt-4">
+    <div class="w-1/2 flex flex-col gap-y-1">
+      <label [for]="fieldNames.first_name">Prénom</label>
+      <input
+        [id]="fieldNames.first_name"
+        type="text"
+        class="text-input"
+        formControlName="first_name"
+      />
+    </div>
+    <div class="w-1/2 flex flex-col gap-y-1">
+      <label [for]="fieldNames.last_name">Nom</label>
+      <input
+        [id]="fieldNames.last_name"
+        type="text"
+        class="text-input"
+        formControlName="last_name"
+      />
+    </div>
+  </div>
+
+  <div class="flex gap-x-3 mt-2">
+    <div class="w-1/2 flex flex-col gap-y-1">
+      <label [for]="fieldNames.email">Email</label>
+      <input [id]="fieldNames.email" type="email" class="text-input" formControlName="email" />
+    </div>
+
+    <div class="w-1/2 flex flex-col gap-y-1">
+      <label [for]="fieldNames.username" class="label-required">Nom d'utilisateur</label>
+      <input
+        [id]="fieldNames.username"
+        type="text"
+        class="text-input"
+        formControlName="username"
+        required
+        maxlength="150"
+      />
+    </div>
+  </div>
+
+  <div class="flex gap-x-3 mt-2">
+    <div class="w-1/2 flex flex-col gap-y-1">
+      <label [for]="fieldNames.password" class="label-required">Mot de passe</label>
+      <input
+        [id]="fieldNames.password"
+        type="password"
+        class="text-input"
+        formControlName="password"
+        required
+      />
+    </div>
+    <div class="w-1/2 flex flex-col gap-y-1">
+      <label [for]="fieldNames.password_confirm" class="label-required"
+        >Confirmation de mot de passe</label
+      >
+      <input
+        [id]="fieldNames.password_confirm"
+        type="password"
+        class="text-input"
+        formControlName="password_confirm"
+        required
+      />
+    </div>
+  </div>
+  <div class="flex justify-center mt-9">
+    <button type="submit" class="btn btn-neutral w-60">S'inscrire</button>
+  </div>
+</form>

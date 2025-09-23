@@ -1,0 +1,128 @@
+<div
+  class="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow duration-200 product-card cursor-pointer"
+  (click)="onProductClick()"
+  (keyup)="onProductClick()"
+  tabindex="0"
+  role="button"
+>
+  <!-- Product Image -->
+  <div class="relative aspect-square overflow-hidden rounded-t-lg">
+    <img
+      [src]="product().image_url"
+      [alt]="product().name"
+      class="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+    />
+
+    <!-- Condition Badge -->
+    <div class="absolute top-2 left-2">
+      <div class="badge" [class]="getConditionClasses(product().condition)">
+        {{ getConditionLabel(product().condition) }}
+      </div>
+    </div>
+
+    @if(isInWishlist() !== undefined && !isUserProduct()) {
+    <div class="absolute top-2 right-2">
+      <button
+        class="btn btn-sm btn-circle text-error"
+        (click)="$event.stopPropagation(); toggleWishlist.emit(product().id)"
+      >
+        <svg class="w-5 h-5" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            [class]="isInWishlist() ? 'fill-error' : 'fill-transparent'"
+            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+          />
+        </svg>
+      </button>
+    </div>
+    }
+  </div>
+
+  <!-- Product Info -->
+  <div class="p-4">
+    <h3 class="font-medium text-gray-900 text-sm mb-1 line-clamp-1">
+      {{ product().name }}
+    </h3>
+
+    <!-- Condition Badge -->
+    <!-- <div class="mb-2">
+      <span class="inline-block px-2 py-1 text-xs rounded-full condition-badge"
+        [class]="getConditionClasses(product.condition)">
+        {{ getConditionLabel(product.condition) }}
+      </span>
+    </div> -->
+
+    <!-- Price and Shipping -->
+    <div class="mb-3">
+      <div class="text-lg font-bold text-gray-900 price-display">
+        {{ product().price | number : '1.2-2' }}€
+      </div>
+      @if(product().shipping_fee=== null){
+      <div class="text-xs text-gray-500">{{ DELIVERY_MODE[product().delivery_mode] }}</div>
+      } @else if (product().shipping_fee > 0) {
+      <div class="text-xs text-gray-500">+ {{ product().shipping_fee }}€ de livraison</div>
+      } @else {
+      <div class="text-xs text-green-600">Livraison gratuite</div>
+      }
+    </div>
+
+    <!-- Seller Info -->
+    <div class="text-xs text-gray-500 mb-3">Vendu par {{ product().created_by_username }}</div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-2">
+      @if(isLoading()) {
+      <button type="button" class="btn btn-warning btn-sm flex-1" disabled>
+        <span class="loading loading-spinner loading-sm inline-block h-full"></span>
+      </button>
+      } @else if(isInCart()) {
+      <button type="button" class="btn btn-warning btn-sm flex-1" (click)="toCart()">
+        Voir mon panier<span class="arrow-right-icon"></span>
+      </button>
+      }@else if(isUserProduct()) {
+      <button type="button" class="btn btn-neutral btn-sm flex-1" (click)="toVendor()">
+        <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+          ></path>
+        </svg>
+        Gérer mon produit
+      </button>
+      } @else if(product().stock_quantity > 0) {
+      <button class="btn btn-warning btn-sm flex-1" (click)="onAddToCart($event)">
+        <svg
+          class="w-4 h-4 mr-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.5 6H17M9 19.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM20.5 19.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"
+          ></path>
+        </svg>
+        Ajouter
+      </button>
+      } @else {
+      <div
+        class="flex-1"
+        (click)="$event.stopPropagation()"
+        (keyup)="$event.stopPropagation()"
+        tabindex="-1"
+      >
+        <button type="button" disabled class="btn btn-neutral btn-sm w-full">
+          En rupture de stock
+        </button>
+      </div>
+      }
+    </div>
+  </div>
+</div>

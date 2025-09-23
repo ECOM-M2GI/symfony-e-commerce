@@ -1,0 +1,17 @@
+<app-carousel
+  [slides]="slides"
+  [interval]="5000"
+  [autoPlay]="true"
+  [pauseOnHover]="true"
+  (cta)="onCta($event)"
+>
+</app-carousel>
+<br />
+<app-products-line-list feed="latest">
+  <h1 header class="text-lg font-bold">Les derniers produits</h1>
+</app-products-line-list>
+<br />
+
+<app-products-line-list feed="popular">
+  <h1 header class="text-lg font-bold">Les plus populaires ce mois-ci</h1>
+</app-products-line-list>

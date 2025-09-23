@@ -1,0 +1,353 @@
+<app-loading [isLoading]="isLoading()">
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <!-- Form Header -->
+    <div class="border-b border-gray-200 px-6 py-4">
+      <ng-content></ng-content>
+    </div>
+
+    <form [formGroup]="productForm" (ngSubmit)="onSubmitProduct()" class="p-6">
+      <!-- Basic Information Section -->
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4">
+          <div
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-[#F63E32] text-white text-sm font-semibold"
+          >
+            1
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Informations de base</h3>
+        </div>
+
+        <div class="space-y-6">
+          <!-- Product Name -->
+          <div class="form-control w-full">
+            <label class="label" [for]="fieldNames()?.name">
+              <span class="label-text font-medium">Nom du produit *</span>
+              <span class="label-text-alt text-xs"
+                >{{ productForm.get('name')?.value?.length || 0 }}/200</span
+              >
+            </label>
+            <input
+              type="text"
+              placeholder="ex: iPhone 14 Pro Max 256GB"
+              class="input placeholder:text-gray-500 input-bordered w-full"
+              [class.input-error]="
+                productForm.get('name')?.invalid && productForm.get('name')?.touched
+              "
+              formControlName="name"
+              [id]="fieldNames()?.name"
+            />
+            @if (productForm.get('name')?.invalid && productForm.get('name')?.touched) {
+            <div class="label">
+              <span class="label-text-alt text-error">
+                Le nom du produit est obligatoire (max 200caractères)
+              </span>
+            </div>
+            }
+          </div>
+
+          <!-- Description -->
+          <div class="form-control w-full">
+            <label class="label" [for]="fieldNames()?.description">
+              <span class="label-text font-medium">Description</span>
+              <span class="label-text-alt text-xs">Optionnel</span>
+            </label>
+            <textarea
+              class="textarea placeholder:text-gray-500 textarea-bordered h-24 resize-none w-full"
+              placeholder="Décrivez votre produit en détail (état, fonctionnalités, défauts éventuels...)"
+              formControlName="description"
+              [id]="fieldNames()?.description"
+            ></textarea>
+            <div class="label">
+              <span class="label-text-alt">
+                Une description détaillée aide les acheteurs à mieux comprendre votre produit
+              </span>
+            </div>
+          </div>
+
+          <!-- Categories and Condition in columns -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Categories -->
+            <div class="form-control w-full">
+              <label class="label" [for]="fieldNames()?.category">
+                <span class="label-text font-medium">Catégorie *</span>
+              </label>
+              <select
+                class="select select-bordered w-full"
+                formControlName="category"
+                [id]="fieldNames()?.category"
+              >
+                <option value="">Sélectionnez une catégorie</option>
+                @for (cat_id of Object.keys(Category); track cat_id) {
+                <option [value]="cat_id">{{ Category[cat_id] }}</option>
+                }
+              </select>
+            </div>
+
+            <!-- Condition -->
+            <div class="form-control w-full">
+              <label class="label" [for]="fieldNames()?.condition">
+                <span class="label-text font-medium">État *</span>
+              </label>
+              <select
+                class="select select-bordered w-full"
+                formControlName="condition"
+                [id]="fieldNames()?.condition"
+              >
+                <option value="">Sélectionnez l'état</option>
+                @for (cond_id of Object.keys(Condition); track cond_id) {
+                <option [value]="cond_id">{{ Condition[cond_id] }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pricing & Stock Section -->
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4">
+          <div
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-[#FEB001] text-accent-content text-sm font-semibold"
+          >
+            2
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Prix et stock</h3>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Price -->
+          <div class="form-control w-full">
+            <label class="label" [for]="fieldNames()?.price">
+              <span class="label-text font-medium">Prix de vente *</span>
+            </label>
+            <div class="join w-full">
+              <input
+                type="number"
+                placeholder="0.00"
+                class="input placeholder:text-gray-500 input-bordered join-item flex-1"
+                [class.input-error]="
+                  productForm.get('price')?.invalid && productForm.get('price')?.touched
+                "
+                formControlName="price"
+                [id]="fieldNames()?.price"
+                min="0.01"
+                step="0.01"
+              />
+              <span class="join-item bg-base-200 px-4 flex items-center text-sm">€</span>
+            </div>
+            @if (productForm.get('price')?.invalid && productForm.get('price')?.touched) {
+            <div class="label">
+              <span class="label-text-alt text-error">Le prix doit être supérieur à 0</span>
+            </div>
+            }
+          </div>
+
+          <!-- Stock -->
+          <div class="form-control w-full">
+            <label class="label" [for]="fieldNames()?.stock_quantity">
+              <span class="label-text font-medium">Quantité en stock *</span>
+            </label>
+            <input
+              type="number"
+              placeholder="1"
+              class="input placeholder:text-gray-500 input-bordered w-full"
+              formControlName="stock_quantity"
+              [id]="fieldNames()?.stock_quantity"
+              min="1"
+            />
+          </div>
+
+          <div class="form-control w-full">
+            <label class="label" [for]="fieldNames()?.delivery_mode">
+              <span class="label-text font-medium">Mode de livraison *</span>
+            </label>
+            <select
+              class="select select-bordered w-full"
+              formControlName="delivery_mode"
+              [id]="fieldNames()?.delivery_mode"
+            >
+              <option value="">Sélectionnez le mode de livraison</option>
+              @for (mode_id of Object.keys(DeliveryMode); track mode_id) {
+              <option [value]="mode_id">{{ DeliveryMode[mode_id] }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Image & Delivery Section -->
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4">
+          <div
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-[#3B78D3] text-white text-sm font-semibold"
+          >
+            3
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Photo et livraison</h3>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Image Upload -->
+          <div class="form-control w-full">
+            <div class="label">
+              <span class="label-text font-medium">Photo du produit *</span>
+            </div>
+            <div
+              class="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-primary transition-colors"
+            >
+              @if (imagePreview()) {
+              <div class="space-y-4">
+                <img
+                  [src]="imagePreview()"
+                  alt="Aperçu"
+                  class="w-40 h-40 object-cover mx-auto rounded-lg shadow-md"
+                />
+                <div class="space-y-2">
+                  <p class="text-sm text-gray-600">Photo sélectionnée</p>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline"
+                    (click)="
+                      selectedImage.set(undefined);
+                      productForm.markAsDirty();
+                      imagePreview.set(null)
+                    "
+                  >
+                    Changer d'image
+                  </button>
+                </div>
+              </div>
+              } @else {
+              <div class="space-y-4">
+                <div class="text-gray-400">
+                  <svg
+                    class="w-16 h-16 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path>
+                  </svg>
+                </div>
+                <div>
+                  <label for="image-upload" class="btn btn-primary cursor-pointer">
+                    Sélectionner une image
+                  </label>
+                  <input
+                    id="image-upload"
+                    type="file"
+                    accept="image/*"
+                    class="hidden"
+                    (change)="onImageSelected($event)"
+                  />
+                </div>
+                <div class="text-xs text-gray-500 space-y-1">
+                  <p>Formats acceptés: PNG, JPG, JPEG</p>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-control w-full md:w-1/2">
+            <label class="label" [for]="fieldNames()?.shipping_fee">
+              <span class="label-text font-medium">Frais de livraison</span>
+            </label>
+            <div class="join w-full">
+              <input
+                type="number"
+                placeholder="0.00"
+                class="input placeholder:text-gray-500 input-bordered join-item flex-1"
+                formControlName="shipping_fee"
+                [id]="fieldNames()?.shipping_fee"
+                min="0"
+                step="0.01"
+                [disabled]="productForm.get('delivery_mode')?.value !== 'by_mail'"
+              />
+              <span class="join-item bg-base-200 px-4 flex items-center text-sm">€</span>
+            </div>
+            <div class="label">
+              <span class="label-text-alt">
+                @if (productForm.get('delivery_mode')?.value !== 'by_mail') { Non applicable pour
+                remise en main propre } @else { Laissez 0 pour la livraison gratuite }
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Publication Settings -->
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4">
+          <div
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-[#53bb0e] text-accent-content text-sm font-semibold"
+          >
+            4
+          </div>
+          <h3 class="text-lg font-medium text-gray-900">Publication</h3>
+        </div>
+
+        <div class="flex justify-center">
+          <div class="form-control w-full max-w-md">
+            <label
+              class="cursor-pointer label justify-center gap-4 p-6 bg-base-100 rounded-lg border border-base-300 hover:bg-base-50 transition-colors"
+            >
+              <input
+                type="checkbox"
+                class="checkbox checkbox-primary"
+                formControlName="is_active"
+                [id]="fieldNames()?.is_active"
+                checked
+              />
+              <div class="text-center">
+                <div class="label-text font-medium text-base">Publier immédiatement</div>
+                <div class="label-text-alt mt-1">
+                  Le produit sera visible dans la boutique dès sa création
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Submit Buttons -->
+      <div class="flex justify-end gap-4 pt-6 border-t border-gray-200">
+        <button type="button" class="btn btn-outline" (click)="cancelForm.emit()">Annuler</button>
+        <button
+          type="submit"
+          class="btn"
+          [ngClass]="submitClass()"
+          [class.loading]="isLoading()"
+          [disabled]="
+            !productForm.valid || selectedImage() === undefined || isLoading() || !productForm.dirty
+          "
+        >
+          @if (isLoading()) {
+          <span class="loading loading-spinner loading-sm"></span>
+          <!-- Jeśli dodałeś progressLabel (opcjonalne), użyj: {{ progressLabel() }} -->
+          {{
+            submitLabel().toLowerCase().includes('modifier')
+              ? 'Modification en cours...'
+              : 'Ajout en cours...'
+          }}
+          } @else {
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            ></path>
+          </svg>
+          {{ submitLabel() }}
+          }
+        </button>
+      </div>
+    </form>
+  </div>
+</app-loading>

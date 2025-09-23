@@ -1,0 +1,21 @@
+<script src="../product-line/product-line.ts"></script>
+<ng-content select="[header]"></ng-content>
+
+<div class="relative w-full overflow-hidden">
+  <div class="flex gap-4 p-4 overflow-x-auto overflow-y-hidden">
+    @if(allProducts() === undefined) {
+    @for (product of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]; track $index) {
+    <div class="flex-shrink-0 w-64">
+      <app-product-card-skeleton> </app-product-card-skeleton>
+    </div>
+    }
+    } @else {
+    @for (product of allProducts(); track $index) {
+    <div class="flex-shrink-0 w-64">
+      <app-product-card [product]="product" (productClick)="viewProduct($event)" (viewDetails)="viewProduct($event)"
+        [isInWishlist]="isInWishlist()(product.id)" (toggleWishlist)="toggleWishlist($event)">
+      </app-product-card>
+    </div>
+    }}
+  </div>
+</div>

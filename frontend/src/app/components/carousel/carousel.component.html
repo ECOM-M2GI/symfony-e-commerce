@@ -1,0 +1,43 @@
+<div class="relative rounded-2xl w-full overflow-hidden" [ngClass]="slides[currentIndex]?.bg || 'bg-[#22c55e]'"
+    (mouseenter)="pause()" (mouseleave)="resume()" role="region" aria-roledescription="carousel" aria-label="Promocje">
+
+    <div class="flex transition-transform duration-700 ease-in-out"
+        [style.transform]="'translateX(-' + currentIndex * 100 + '%)'">
+        <div *ngFor="let s of slides; let i = index" class="w-full shrink-0">
+            <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-6 p-6 md:p-10">
+                <div class="text-neutral-900">
+                    <h2 class="text-3xl md:text-4xl font-bold tracking-tight">
+                        {{ s.title }}
+                    </h2>
+                    <p class="mt-2 md:mt-3 text-neutral-800/90">
+                        {{ s.subtitle }}
+                    </p>
+                    <button *ngIf="s.cta" type="button"
+                        class="inline-flex items-center rounded-full bg-neutral-900 text-white px-6 py-3 mt-6 text-sm font-medium hover:bg-neutral-800"
+                        (click)="onCtaClick()">
+                        {{ s.cta }}
+                    </button>
+                </div>
+
+                <div class="flex items-end justify-center gap-8">
+                    <img [src]="s.img" [alt]="'Slide ' + (i+1)" class="h-44 md:h-64 object-contain" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- arrows -->
+    <button type="button" aria-label="Prev"
+        class="absolute right-16 bottom-4 md:bottom-6 grid place-items-center w-10 h-10 rounded-full  text-white hover:bg-black/70"
+        (click)="prev()">❮</button>
+    <button type="button" aria-label="Next"
+        class="absolute right-4 bottom-4 md:bottom-6 grid place-items-center w-10 h-10 rounded-full  text-white hover:bg-black/70"
+        (click)="next()">❯</button>
+
+    <!-- dots -->
+    <div class="absolute left-1/2 -translate-x-1/2 bottom-4 md:bottom-6 flex gap-2">
+        <button *ngFor="let _ of slides; let i = index" class="h-2.5 w-2.5 rounded-full"
+            [class.bg-white]="i===currentIndex" [class.bg-white/50]="i!==currentIndex" (click)="go(i)"
+            [attr.aria-label]="'Idź do slajdu ' + (i+1)"></button>
+    </div>
+</div>

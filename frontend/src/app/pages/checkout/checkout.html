@@ -1,0 +1,27 @@
+<div class="flex flex-col items-center">
+    <div class="card bg-base-100 w-186 h-124 shadow-sm">
+        <div class="flex items-center justify-center">
+            <img class="h-42 aspect-square" src="img/logo_sans_background.svg"/>
+            <span class="color:#444;">Checkout</span>
+        </div>
+        <div class ='ml-8'>
+            <div class="mb-8">
+                <h2 class="body-1">Votre paiement en ligne</h2>
+                <h3 class="body-2">Fin de paiement</h3>
+            </div>
+            <div class="body-3">
+                Votre paiement a été effectué avec succès
+                <span style="color:#4caf50;font-size:1.5rem;vertical-align:middle;">&#10004;</span>
+            </div>
+            <p class="body-3">
+                Vos produits ont été crédités sur votre compte.<br>
+                Votre facture vous a été envoyée en format PDF à l'adresse suivante: <b>{{userEmail()}}</b>
+            </p>
+        </div>
+
+        <div class="flex items-center justify-center bottom-0">
+            <button class="btn-black btn-arrow-white w-auto mx-auto mt-8 mb-8" (click)="redirect()">Retourner aux achats</button>   
+        </div>   
+    </div>
+  
+</div>

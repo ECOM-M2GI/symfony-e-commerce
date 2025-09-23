@@ -1,0 +1,78 @@
+<app-loading [isLoading]="productsList() === undefined">
+  <div class="card bg-white rounded-2xl p-5 shadow-lg border-b border-base-300 mt-10 ml-4">
+    <h1 class="card-title text-2xl">
+      Mes {{ salesOrPurchases() === 'purchases' ? 'achats' : 'ventes' }}
+    </h1>
+    @if (productsList()!.length === 0) {
+    <div class="mt-12">
+      <div class="alert alert-info justify-center">
+        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+          />
+        </svg>
+        <span
+          >Vous n'avez encore aucun{{
+            salesOrPurchases() === 'purchases' ? ' achat' : 'e vente'
+          }}</span
+        >
+      </div>
+    </div>
+    } @else {
+    <div class="mt-6 flex flex-col gap-y-4">
+      @for (product of productsList()!; track $index) {
+      <div class="card bg-base-100/30 p-4 shadow-md transition">
+        <!-- górna linia: Vendeur/Acheteur -->
+        <p class="text-base-content/70 text-sm">
+          {{
+    'seller_username' in product
+      ? `Vendeur : ${product.seller_username}`
+      : `Acheteur : ${product.buyer_username}`
+          }}
+        </p>
+
+        <div class="mt-2 flex items-start gap-4">
+          <!-- photo -->
+          <a class="shrink-0 cursor-pointer" (click)="viewProduct(product.product_id)">
+            <div class="w-24 h-24 md:w-28 md:h-28 rounded-2xl overflow-hidden bg-base-200">
+              <img
+                [src]="product.product_image_url || 'https://placehold.co/300x300?text=Img'"
+                [alt]="product.product_name || 'Image produit'"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          </a>
+
+          <div class="flex-1 min-w-0">
+            <h3 class="text-base md:text-lg font-semibold truncate">
+              <a
+                class="hover:underline decoration-info cursor-pointer"
+                (click)="viewProduct(product.product_id)"
+              >
+                {{ product.product_name }}
+              </a>
+            </h3>
+          </div>
+
+          <div class="text-right ml-auto min-w-[190px]">
+            <p class="badge mb-1" [class]="orderStatusColor[product.status][1]">
+              {{ orderStatusColor[product.status][0] }}
+            </p>
+            <p class="text-lg font-semibold">{{ product.line_total }} €</p>
+            <p class="text-base-content/70 text-sm">Prix à l'unité : {{ product.unit_price }} €</p>
+            <p class="text-base-content/70 text-sm">Quantité : {{ product.quantity }}</p>
+            <p class="text-base-content/60 text-xs mt-1">
+              {{ 'seller_username' in product ? 'Acheté le' : 'Vendu le' }}
+              {{ product.updated_at | date : 'dd/MM/yyyy à HH:mm' }}
+            </p>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    }
+  </div>
+</app-loading>

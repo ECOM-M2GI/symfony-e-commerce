@@ -1,0 +1,13 @@
+@if(isLoading()) {
+<div class="h-full w-full flex justify-center items-center" [class]="{
+        'min-h-20': size() === 'default'
+        }">
+    <div class="loading loading-spinner" [class]="{
+            'loading-md': size() === 'default', 
+            'loading-sm': size() === 'small'
+            }">
+    </div>
+</div>
+} @else {
+<ng-content />
+}

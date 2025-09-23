@@ -1,0 +1,269 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white border-b border-gray-200 rounded-sm px-2 md:px-4">
+    <div class="max-w-7xl mx-auto px-4 py-6">
+      <h1 class="text-3xl font-bold text-gray-900">Espace Vendeur</h1>
+      <p class="text-gray-600 mt-2">Gérez vos produits et vos ventes</p>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="max-w-7xl mx-auto px-4 mt-6">
+    <div class="tabs tabs-bordered">
+      <button
+        type="button"
+        class="tab tab-lg gap-2 px-4 md:px-6 rounded-xl transition-colors hover:bg-base-200/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+        [class.tab-active]="activeTab() === 'products'"
+        [attr.aria-selected]="activeTab() === 'products'"
+        (click)="setActiveTab('products')"
+      >
+        <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+          ></path>
+        </svg>
+        <span class="hidden sm:inline">Mes Produits</span>
+        <span class="badge badge-ghost badge-sm md:badge-md md:ml-1">{{
+          userProducts().length
+        }}</span>
+      </button>
+      <button
+        type="button"
+        class="tab tab-lg gap-2 px-4 md:px-6 rounded-xl transition-colors hover:bg-base-200/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60"
+        [class.tab-active]="activeTab() === 'add-product'"
+        [attr.aria-selected]="activeTab() === 'add-product'"
+        (click)="setActiveTab('add-product')"
+      >
+        <svg class="w-5 h-5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+          ></path>
+        </svg>
+        Ajouter un Produit
+      </button>
+      @if (editingProduct()) {
+      <button
+        class="tab tab-lg"
+        [class.tab-active]="activeTab() === 'edit-product'"
+        (click)="setActiveTab('edit-product')"
+      >
+        <svg
+          class="w-4 h-4 mr-2"
+          viewBox="0 0 48 48"
+          stroke="currentColor"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M34 5.99999C34.5253 5.47471 35.1489 5.05803 35.8352 4.77374C36.5215 4.48946 37.2571 4.34314 38 4.34314C38.7429 4.34314 39.4785 4.48946 40.1648 4.77374C40.8511 5.05803 41.4747 5.47471 42 5.99999C42.5253 6.52528 42.942 7.14889 43.2263 7.83521C43.5105 8.52153 43.6569 9.25713 43.6569 9.99999C43.6569 10.7429 43.5105 11.4785 43.2263 12.1648C42.942 12.8511 42.5253 13.4747 42 14L15 41L4 44L7 33L34 5.99999Z"
+            stroke-width="4"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+        </svg>
+        Modifier : {{ editingProduct()?.name }}
+      </button>
+      }
+    </div>
+  </div>
+
+  <!-- Alert Messages -->
+  <div class="max-w-7xl mx-auto px-4 mt-4">
+    @if (errorMessage()) {
+    <div class="alert alert-error mb-4">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
+      <span>{{ errorMessage() }}</span>
+      <button class="btn btn-sm" (click)="clearMessages()">✕</button>
+    </div>
+    } @if (successMessage()) {
+    <div class="alert alert-success mb-4">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
+      <span>{{ successMessage() }}</span>
+    </div>
+    }
+  </div>
+
+  <!-- Content Area -->
+  <div class="max-w-7xl mx-auto px-4 py-6">
+    <!-- My Products Tab -->
+    @if (activeTab() === 'products') {
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-semibold text-gray-900">Mes Produits</h2>
+        <div class="flex gap-2">
+          <button class="btn btn-outline btn-sm" (click)="loadUserProducts()">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+              ></path>
+            </svg>
+            Actualiser
+          </button>
+        </div>
+      </div>
+
+      @if (isLoading()) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (_ of [1, 2, 3, 4, 5, 6, 7, 8]; track $index) {
+        <app-vendor-product-card-skeleton></app-vendor-product-card-skeleton>
+        }
+      </div>
+      } @else if (userProducts().length === 0) {
+      <div class="text-center py-12">
+        <div class="text-gray-400 mb-4">
+          <svg class="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+            ></path>
+          </svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-2">Aucun produit</h3>
+        <p class="text-gray-500 mb-4">Vous n'avez pas encore ajouté de produits à votre boutique</p>
+        <button class="btn btn-primary" (click)="setActiveTab('add-product')">
+          Ajouter votre premier produit
+        </button>
+      </div>
+      } @else {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        @for (product of userProducts(); track product.id) {
+        <div
+          class="card bg-base-100 shadow-md border border-gray-200 hover:shadow-lg transition-shadow"
+        >
+          <!-- Product Image -->
+          <figure class="relative">
+            <img [src]="product.image_url" [alt]="product.name" class="w-full h-48 object-cover" />
+            <!-- Status Badge -->
+            <div class="absolute top-2 right-2">
+              <div class="badge" [class]="product.is_active ? 'badge-success' : 'badge-error'">
+                {{ product.is_active ? 'Actif' : 'Inactif' }}
+              </div>
+            </div>
+            <!-- Condition Badge -->
+            <div class="absolute top-2 left-2">
+              <div class="badge badge-outline bg-white">
+                @switch (product.condition) { @case ('new') { Neuf } @case ('like new') { Comme neuf
+                } @case ('good') { Bon état } @default { Acceptable } }
+              </div>
+            </div>
+          </figure>
+
+          <div class="card-body p-4">
+            <h3 class="card-title text-sm line-clamp-2">{{ product.name }}</h3>
+
+            <p class="text-xs text-gray-600 line-clamp-2 mb-2">{{ product.description }}</p>
+
+            <!-- Price and Stock -->
+            <div class="flex justify-between items-center mb-3">
+              <div>
+                <div class="text-lg font-bold text-neutral">
+                  {{ product.price | number : '1.2-2' }}€
+                </div>
+                @if (product.shipping_fee > 0) {
+                <div class="text-xs text-gray-500">+ {{ product.shipping_fee }}€ livraison</div>
+                } @else if (product.delivery_mode === 'hand_to_hand') {
+                <div class="text-xs text-gray-500">Pas de livraison</div>
+                } @else {
+                <div class="text-xs text-green-600">Livraison gratuite</div>
+                }
+              </div>
+              <div class="text-right">
+                <div class="text-sm font-medium">Stock: {{ product.stock_quantity }}</div>
+                <div class="text-xs text-gray-500">
+                  {{ product.delivery_mode === 'by_mail' ? 'Courrier' : 'Main propre' }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-y-2 w-full">
+              <div class="grid grid-cols-2 gap-2">
+                <button
+                  class="btn h-8 w-full"
+                  [class]="product.is_active ? 'btn-outline' : 'btn-success'"
+                  (click)="toggleProductStatus(product)"
+                >
+                  {{ product.is_active ? 'Désactiver' : 'Activer' }}
+                </button>
+                <button
+                  type="button"
+                  class="btn h-8 w-full btn-outline"
+                  (click)="triggerEdit(product)"
+                >
+                  Modifier
+                </button>
+              </div>
+              <div>
+                <button class="btn h-8 w-full btn-error" (click)="deleteProduct(product.id)">
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+    }
+
+    <!-- Add Product Tab -->
+    @if (activeTab() === 'add-product') {
+    <app-vendor-manage-product
+      #addProduct
+      (submitForm)="onSubmitAddProduct($event)"
+      [isLoading]="isLoading()"
+      (cancelForm)="cancelAdd()"
+      submitLabel="Ajouter le produit"
+      submitClass="btn-warning"
+    >
+      <h2 class="text-xl font-semibold text-gray-900">Ajouter un nouveau produit</h2>
+      <p class="text-sm text-gray-600 mt-1">
+        Remplissez les informations ci-dessous pour créer votre produit
+      </p>
+    </app-vendor-manage-product>
+    } @if (activeTab() === 'edit-product' && editingProduct()) {
+    <app-vendor-manage-product
+      #editProduct
+      (submitForm)="onSubmitEditingProduct($event)"
+      [isLoading]="isLoading()"
+      [editProductData]="editingProduct()"
+      (cancelForm)="cancelEdit()"
+      submitLabel="Modifier le produit"
+      submitClass="btn-info"
+    >
+      <h2 class="text-xl font-semibold text-gray-900">
+        Modifier votre annonce : {{ editingProduct()?.name }}
+      </h2>
+      <p class="text-sm text-gray-600 mt-1">
+        Remplissez les informations ci-dessous pour modifier votre produit
+      </p>
+    </app-vendor-manage-product>
+    }
+  </div>
+</div>
