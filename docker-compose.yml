@@ -2,40 +2,24 @@ services:
   backend-dev:
     build:
       context: backend/
-      dockerfile: Dockerfile.dev
+      dockerfile: Dockerfile
     ports:
       - "8000:8000"
     depends_on:
-      postgres:
+      mariadb:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/ || exit 1" ]
       interval: 10s
       timeout: 5s
       retries: 5
     environment:
-      AWS_ACCESS_KEY_ID: copy_key_here
-      AWS_SECRET_ACCESS_KEY: copy_secret_here
-      STRIPE_SECRET_KEY: sk_secret
-      STRIPE_WEBHOOK_SECRET: whsec_secret
-      AWS_DEFAULT_REGION: eu-north-1
-      AWS_BUCKET_NAME: ebey-backend-files
-      AWS_S3_CUSTOM_DOMAIN: dwnazphq75jed.cloudfront.net
-      DB_HOST: postgres
+      DB_HOST: mariadb
     develop:
       watch:
         - action: sync
           path: ./backend
-          target: /app
-          ignore:
-            - __pycache__/
-            - "*.pyc"
-            - "*.pyo"
-            - "*.pyd"
-            - .pytest_cache/
-            - .coverage
-            - htmlcov/
-            - "*.egg-info/"
+          target: /
 
   backend-prod:
     build:
@@ -44,21 +28,23 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      postgres:
+      mariadb:
         condition: service_healthy
 
-  postgres:
-    image: postgres:17
+  mariadb:
+    image: mariadb:10.11
+    env_file:
+      - .env.local
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: mydatabase
+      MYSQL_DATABASE: ${LOCAL_DB_NAME:-annonces}
+      MYSQL_USER: ${LOCAL_DB_USER:-user}
+      MYSQL_PASSWORD: ${LOCAL_DB_USER_PASSWORD:-password}
     ports:
-      - "5432:5432"
+      - "3306:3306"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mariadb:/var/lib/mariadb/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d mydatabase"]
+      test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p${LOCAL_DB_ROOT_PASSWORD:-rootpassword}" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -82,13 +68,13 @@ services:
           ignore:
             - node_modules/
 
-#  angular-test:
-#    build:
-#      context: frontend/
-#      dockerfile: Dockerfile.dev
-#    ports:
-#      - "9876:9876"
-#    command: ["npm", "run", "test"]
+  #The apache service
+  webserver:
+    build:
+      context: docker/apache/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"
 
 volumes:
-  pgdata:
+  mariadb:
