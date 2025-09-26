@@ -1,40 +1,9 @@
 services:
-  backend-dev:
-    build:
-      context: backend/
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    depends_on:
-      mariadb:
-        condition: service_healthy
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f http://localhost:8000/ || exit 1" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    environment:
-      DB_HOST: mariadb
-    develop:
-      watch:
-        - action: sync
-          path: ./backend
-          target: /
-
-  backend-prod:
-    build:
-      context: backend/
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    depends_on:
-      mariadb:
-        condition: service_healthy
 
   mariadb:
     image: mariadb:10.11
     env_file:
-      - .env.local
+      - server/.env.local
     environment:
       MYSQL_DATABASE: ${LOCAL_DB_NAME:-annonces}
       MYSQL_USER: ${LOCAL_DB_USER:-user}
@@ -49,32 +18,54 @@ services:
       timeout: 5s
       retries: 5
 
-  angular-dev:
-    build:
-      context: frontend/
-      dockerfile: Dockerfile.dev
-    ports:
-      - "4200:4200"
-    environment:
-      - CHOKIDAR_USEPOLLING=true
-      - WATCHPACK_POLLING=true
-      - API_URL=http://localhost:8000/api/
-      - STRIPE_PUBLISHABLE_KEY=pk_test_51S6S0NRuasokNTVWHlHwo3Pz8nkSNeqNmuGo0BoV2A3XE1iHMDK6UmCLRyLUMfblZxMvdqLGg2s9eAn7EoQF8abt00p7A4FSVR
-    develop:
-      watch:
-        - action: sync
-          path: ./frontend/src
-          target: /app/src
-          ignore:
-            - node_modules/
-
-  #The apache service
+  # The apache service that install everything to run the symfony application and build the angular frontend
   webserver:
     build:
-      context: docker/apache/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: server/Dockerfile
+    env_file:
+      - server/.env.local
+    environment:
+      MYSQL_DATABASE: ${LOCAL_DB_NAME:-annonces}
+      MYSQL_USER: ${LOCAL_DB_USER:-user}
+      MYSQL_PASSWORD: ${LOCAL_DB_USER_PASSWORD:-password}
     ports:
       - "8080:80"
+    depends_on:
+      mariadb:
+        condition: service_healthy
+
+  frontend-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./frontend:/app:delegated
+      - node_modules_dev:/app/node_modules
+    ports:
+      - "4200:4200"
+
+  # Tu pourrais me générer un dockerfile.dev pour le dev 
+  webserver-dev:
+    build:
+      context: .
+      dockerfile: server/Dockerfile.dev
+    ports:
+      - "8080:80"
+    env_file:
+      - server/.env.local
+    environment:
+      MYSQL_DATABASE: ${LOCAL_DB_NAME:-annonces}
+      MYSQL_USER: ${LOCAL_DB_USER:-user}
+      MYSQL_PASSWORD: ${LOCAL_DB_USER_PASSWORD:-password}
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    volumes:
+      - ./api:/var/www/api:delegated
+      - vendor-dev:/var/www/api/vendor
 
 volumes:
   mariadb:
+  vendor-dev:
+  node_modules_dev:
