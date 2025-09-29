@@ -1,9 +1,15 @@
 # IM2AG-e-commerce
 
-## Getting started
+## Getting started on dev mode
 
 ```bash
-docker compose up --watch --build angular-dev backend-dev
+docker compose up frontend-dev webserver-dev mariadb
+```
+
+## Getting started on production mode
+
+```bash
+docker compose up webserver mariadb
 ```
 
 ### Stop the project
