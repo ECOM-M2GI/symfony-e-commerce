@@ -5,7 +5,7 @@ const path = require('path');
 
 // Read environment variables with defaults
 const environment = {
-  apiUrl: process.env.API_URL || 'http://localhost:8000/api/',
+  apiUrl: process.env.API_URL || 'http://localhost:8080/api/',
   stripePublishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'your-default-stripe-key',
 };
 
