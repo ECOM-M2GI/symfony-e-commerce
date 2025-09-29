@@ -39,6 +39,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+    environment:
+      API_URL: ${API_URL:-http://webserver-dev/api/}
     volumes:
       - ./frontend:/app:delegated
       - node_modules_dev:/app/node_modules

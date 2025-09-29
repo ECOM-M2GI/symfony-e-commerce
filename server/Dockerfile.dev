@@ -16,9 +16,6 @@ RUN wget https://getcomposer.org/download/2.8.3/composer.phar \
 
 COPY api/ /var/www/api
 
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install -d /var/www/api
-
 # Create cache and log directories with proper permissions
 RUN mkdir -p /var/www/api/var/cache /var/www/api/var/log \
     && chown -R www-data:www-data /var/www/api/var \
@@ -28,5 +25,5 @@ COPY server/apache.conf /etc/apache2/sites-enabled/000-default.conf
 
 WORKDIR /var/www
 
-# Fix permissions at startup since volumes override build-time permissions
-CMD ["sh", "-c", "mkdir -p /var/www/api/var/cache /var/www/api/var/log && chown -R www-data:www-data /var/www/api/var && chmod -R 775 /var/www/api/var && apache2-foreground"]
+# Installer les dépendances et fixer les permissions au runtime
+CMD ["sh", "-c", "composer install -d /var/www/api --no-interaction && mkdir -p /var/www/api/var/cache /var/www/api/var/log && chown -R www-data:www-data /var/www/api/var && chmod -R 775 /var/www/api/var && apache2-foreground"]

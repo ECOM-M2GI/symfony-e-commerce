@@ -12,6 +12,12 @@ docker compose up frontend-dev webserver-dev mariadb
 docker compose up webserver mariadb
 ```
 
+### Access Docker Bash
+
+```bash
+docker exec -it <mycontainer> sh
+```
+
 ### Stop the project
 
 ```bash

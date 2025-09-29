@@ -1,4 +1,4 @@
 export const environment = {
-  "apiUrl": "http://localhost:8080/api/",
+  "apiUrl": "http://webserver-dev/api/",
   "stripePublishableKey": "your-default-stripe-key"
 };
