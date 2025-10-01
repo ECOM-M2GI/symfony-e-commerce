@@ -45,12 +45,8 @@ RUN wget https://getcomposer.org/download/2.8.3/composer.phar \
 COPY --from=node-build /app/dist/${PROJECT_NAME}/browser /var/www/html
 
 COPY api/ /var/www/api
-
-ENV COMPOSER_ALLOW_SUPERUSER=1
-RUN composer install -d /var/www/api --no-dev --optimize-autoloader
-
 COPY server/apache.conf /etc/apache2/sites-enabled/000-default.conf 
 
 WORKDIR /var/www
 
-CMD ["apache2-foreground"]
+CMD ["sh", "-c", "composer install -d /var/www/api --no-interaction --optimize-autoloader && apache2-foreground"]

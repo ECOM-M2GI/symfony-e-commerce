@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class ProductController extends AbstractController
 {
-    #[Route('/api/products', name: 'app_product')]
+    #[Route('/v1/products', name: 'app_product')]
     public function getAll(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
         $productsList = $productRepository->findAll();
