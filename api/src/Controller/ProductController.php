@@ -19,4 +19,13 @@ final class ProductController extends AbstractController
 
         return new JsonResponse($jsonProductsList, Response::HTTP_OK, [], true);
     }
+
+    #[Route('/v1/products/{id}', name: 'app_product_search_by_id', methods: ['GET'])]
+    public function findById(ProductRepository $productRepository, SerializerInterface $serializer, string $id): JsonResponse
+    {
+        $product = $productRepository->find($id);
+        $jsonProduct = $serializer->serialize($product, 'json');
+
+        return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
+    }
 }

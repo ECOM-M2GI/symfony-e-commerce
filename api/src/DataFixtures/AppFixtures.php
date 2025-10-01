@@ -33,6 +33,7 @@ class AppFixtures extends Fixture
             $product->setPrice(mt_rand(1000, 20000) / 100);
             $product->setStockQuantity(mt_rand(0, 100));
             $product->setIsActive((bool)mt_rand(0, 1));
+            $product->setImageUrl('https://placehold.co/600x400');
             
             // Ajouter des enums aléatoirement
             $categories = CategoryEnum::cases();
