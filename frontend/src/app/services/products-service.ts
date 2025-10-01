@@ -51,6 +51,13 @@ export class ProductsService {
     );
   }
 
+  public getProduct(productId: string): Observable<ProductModel> {
+    const url = new URL(`v1/products/${productId}/`, this.baseUrl).toString();
+    return this.http.get<ProductModel>(url).pipe(
+      map((p) => normalizeProduct(p)),
+    );
+  }
+
   public myProducts(): Observable<ProductModel[]> {
     const url = new URL('v1/user/products/', this.baseUrl).toString();
     if (this.localAuth.isLoggedIn()) {

@@ -64,17 +64,9 @@ export class ProductDetailsComponent implements OnInit {
 
     // For now, we'll use the allProducts method and filter
     // In a real app, you'd have a getProductById method
-    this.productsService.allProducts().subscribe({
-      next: (products) => {
-
-        const foundProduct = products.find((p) => p.id === productId);
-        if (foundProduct) {
-
-          this.product.set(foundProduct);
-        } else {
-          this.errorMessage.set('Produit non trouvé');
-        }
-
+    this.productsService.getProduct(productId).subscribe({
+      next: (product) => {
+        this.product.set(product);
         this.wishlistService.getWishlist().subscribe({
           next: (wishlist) => {
             const product_id = this.product()?.id;
