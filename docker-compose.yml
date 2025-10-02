@@ -5,9 +5,11 @@ services:
     env_file:
       - server/.env.local
     environment:
-      MYSQL_DATABASE: ${LOCAL_DB_NAME:-annonces}
-      MYSQL_USER: ${LOCAL_DB_USER:-user}
-      MYSQL_PASSWORD: ${LOCAL_DB_USER_PASSWORD:-password}
+      MYSQL_DATABASE: annonces
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_SERVER: mariadb
+      MYSQL_VERSION: mariadb-10.11.8
     ports:
       - "3306:3306"
     volumes:
@@ -26,9 +28,11 @@ services:
     env_file:
       - server/.env.local
     environment:
-      MYSQL_DATABASE: ${LOCAL_DB_NAME:-annonces}
-      MYSQL_USER: ${LOCAL_DB_USER:-user}
-      MYSQL_PASSWORD: ${LOCAL_DB_USER_PASSWORD:-password}
+      MYSQL_DATABASE: annonces
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_SERVER: mariadb
+      MYSQL_VERSION: 10.11.8
     ports:
       - "8080:80"
     depends_on:
@@ -55,9 +59,11 @@ services:
     env_file:
       - server/.env.local
     environment:
-      MYSQL_DATABASE: ${LOCAL_DB_NAME:-annonces}
-      MYSQL_USER: ${LOCAL_DB_USER:-user}
-      MYSQL_PASSWORD: ${LOCAL_DB_USER_PASSWORD:-password}
+      MYSQL_DATABASE: annonces
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_SERVER: mariadb
+      MYSQL_VERSION: 10.11.8
     depends_on:
       mariadb:
         condition: service_healthy
