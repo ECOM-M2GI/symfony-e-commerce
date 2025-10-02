@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Model\CategoryEnum;
 use App\Model\DeliveryModeEnum;
 use App\Model\ConditionEnum;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -55,7 +56,7 @@ class Product
     private ?CategoryEnum $category = null;
 
     #[ORM\Column(type: 'string', enumType: ConditionEnum::class, nullable: true)]
-    private ?ConditionEnum $productCondition = null;
+    private ?ConditionEnum $product_condition = null;
 
     public function getId(): ?int
     {
@@ -205,14 +206,15 @@ class Product
         return $this;
     }
 
+    #[SerializedName('condition')]
     public function getProductCondition(): ?ConditionEnum
     {
-        return $this->productCondition;
+        return $this->product_condition;
     }
 
     public function setProductCondition(?ConditionEnum $condition): static
     {
-        $this->productCondition = $condition;
+        $this->product_condition = $condition;
 
         return $this;
     }
