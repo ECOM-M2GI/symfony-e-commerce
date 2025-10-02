@@ -18,6 +18,13 @@ docker compose up webserver mariadb
 docker exec -it <mycontainer> sh
 ```
 
+### Database Export
+
+```bash
+docker exec CONTAINER /usr/bin/mysqldump -u root --password=rootpassword annonces > backup.sql
+```
+
+
 ### Stop the project
 
 ```bash
