@@ -21,7 +21,7 @@ docker exec -it <mycontainer> sh
 ### Database Export
 
 ```bash
-docker exec CONTAINER /usr/bin/mysqldump -u root --password=rootpassword annonces > backup.sql
+docker exec <mycontainer> /usr/bin/mysqldump -u root --password=rootpassword annonces > backup.sql
 ```
 
 
@@ -30,7 +30,3 @@ docker exec CONTAINER /usr/bin/mysqldump -u root --password=rootpassword annonce
 ```bash
 docker compose down
 ```
-
-## License
-
-[GPL-V3](https://www.gnu.org/licenses/gpl-3.0.fr.html#license-text)
