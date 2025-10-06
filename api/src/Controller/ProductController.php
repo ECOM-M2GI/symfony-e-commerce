@@ -133,7 +133,8 @@ final class ProductController extends AbstractController
         }
 
         // Sérialiser et retourner
-        $jsonProducts = $serializer->serialize($products, 'json');
+        $context = ['groups' => ['product:read']];
+        $jsonProducts = $serializer->serialize($products, 'json', $context);
         return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
     }
 
@@ -141,7 +142,8 @@ final class ProductController extends AbstractController
     public function findById(ProductRepository $productRepository, SerializerInterface $serializer, string $id): JsonResponse
     {
         $product = $productRepository->find($id);
-        $jsonProduct = $serializer->serialize($product, 'json');
+        $context = ['groups' => ['product:read']];
+        $jsonProduct = $serializer->serialize($product, 'json', $context);
 
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
     }

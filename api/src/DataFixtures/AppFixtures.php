@@ -8,16 +8,17 @@ namespace App\DataFixtures;
 
 use App\Entity\Book;
 
+use App\Entity\User;
+
 use App\Entity\Product;
 
 use App\Model\CategoryEnum;
 
-use App\Model\DeliveryModeEnum;
-
 use App\Model\ConditionEnum;
 
-use Doctrine\Persistence\ObjectManager;
+use App\Model\DeliveryModeEnum;
 
+use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 
 class AppFixtures extends Fixture
@@ -25,10 +26,30 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
+        $usersList = [];
+
+        // Création de 5 users
+        for ($i = 0; $i < 5; $i++) {
+            $user = new User();
+            $user->setUsername('user' . $i);
+            $user->setEmail('user' . $i . '@example.com');
+            $user->setPassword('password' . $i);
+            $user->setFirstName('User' . $i);
+            $user->setLastName('LastName' . $i);
+            $user->setPhoneNumber('012345678' . $i);
+            $year = mt_rand(1970, 2005);
+            $month = mt_rand(1, 12);
+            $day = mt_rand(1, 28); // Pour éviter les problèmes de jours invalides
+            $user->setDateOfBirth(new \DateTime("$year-$month-$day"));
+            $user->setAdress('123 Main St, City ' . $i);
+
+            $usersList[] = $user; // Stocker l'utilisateur dans la liste
+            $manager->persist($user);
+        }
+
         // Création d'une vingtaine de produits
         for ($i = 0; $i < 20; $i++) {
             $product = new Product();
-            $product->setUserId($i + 1);
             $product->setName('Produit ' . $i);
             $product->setPrice(mt_rand(1000, 20000) / 100);
             $product->setStockQuantity(mt_rand(0, 100));
@@ -44,6 +65,8 @@ class AppFixtures extends Fixture
             
             $conditions = ConditionEnum::cases();
             $product->setProductCondition($conditions[array_rand($conditions)]);
+
+            $product->setOwner($usersList[array_rand($usersList)]); // Assigner un utilisateur aléatoire
             
             $manager->persist($product);
         }

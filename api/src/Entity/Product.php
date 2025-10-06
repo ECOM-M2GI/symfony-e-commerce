@@ -5,10 +5,11 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use App\Model\CategoryEnum;
 use App\Model\DeliveryModeEnum;
 use App\Model\ConditionEnum;
-use Symfony\Component\Serializer\Annotation\SerializedName;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -17,62 +18,65 @@ class Product
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(["product:read"])]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $user_id = null;
-
     #[ORM\Column(length: 200, nullable: true)]
+    #[Groups(["product:read"])]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(["product:read"])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    #[Groups(["product:read"])]
     private ?string $price = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(["product:read"])]
     private ?int $stock_quantity = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(["product:read"])]
     private ?bool $is_active = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    #[Groups(["product:read"])]
     private ?string $shipping_fee = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["product:read"])]
     private ?\DateTime $created_at = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Groups(["product:read"])]
     private ?\DateTime $updated_at = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(["product:read"])]
     private ?string $image_url = null;
 
     #[ORM\Column(type: 'string', enumType: DeliveryModeEnum::class, nullable: true)]
+    #[Groups(["product:read"])]
     private ?DeliveryModeEnum $delivery_mode = null;
 
     #[ORM\Column(type: 'string', enumType: CategoryEnum::class, nullable: true)]
+    #[Groups(["product:read"])]
     private ?CategoryEnum $category = null;
 
     #[ORM\Column(type: 'string', enumType: ConditionEnum::class, nullable: true)]
+    #[SerializedName('condition')]
+    #[Groups(["product:read"])]
     private ?ConditionEnum $product_condition = null;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUserId(): ?int
-    {
-        return $this->user_id;
-    }
-
-    public function setUserId(int $user_id): static
-    {
-        $this->user_id = $user_id;
-
-        return $this;
     }
 
     public function getName(): ?string
@@ -206,7 +210,6 @@ class Product
         return $this;
     }
 
-    #[SerializedName('condition')]
     public function getProductCondition(): ?ConditionEnum
     {
         return $this->product_condition;
@@ -229,6 +232,26 @@ class Product
     public function setUpdatedAt(\DateTime $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+
+    
+    #[Groups(["product:read"])]
+    #[SerializedName('created_by_username')]
+    public function getOwnerUsername(): string
+    {
+        return $this->owner->getUsername();
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

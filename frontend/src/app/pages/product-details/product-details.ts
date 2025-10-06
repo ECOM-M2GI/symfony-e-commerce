@@ -25,7 +25,7 @@ export class ProductDetailsComponent implements OnInit {
   private cartService = inject(CartService);
   private localAuth = inject(LocalAuthService)
 
-  wishlisted = signal<boolean|undefined>(undefined);
+  wishlisted = signal<boolean | undefined>(undefined);
 
   // Add loading signals for different actions
   isAddingToCart = signal(false);
@@ -66,6 +66,7 @@ export class ProductDetailsComponent implements OnInit {
     // In a real app, you'd have a getProductById method
     this.productsService.getProduct(productId).subscribe({
       next: (product) => {
+        console.log('test1')
         this.product.set(product);
         this.wishlistService.getWishlist().subscribe({
           next: (wishlist) => {

@@ -6,6 +6,7 @@ services:
       - server/.env.local
     environment:
       MYSQL_DATABASE: annonces
+      MYSQL_ROOT_PASSWORD: ${LOCAL_DB_ROOT_PASSWORD:-rootpassword}
       MYSQL_USER: user
       MYSQL_PASSWORD: password
       MYSQL_SERVER: mariadb
