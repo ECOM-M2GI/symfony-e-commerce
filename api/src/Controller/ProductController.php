@@ -2,13 +2,15 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
 use App\Repository\ProductRepository;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class ProductController extends AbstractController
 {
@@ -139,12 +141,20 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/v1/products/{id}', name: 'app_product_search_by_id', methods: ['GET'])]
-    public function findById(ProductRepository $productRepository, SerializerInterface $serializer, string $id): JsonResponse
+    public function findById(Product $product, SerializerInterface $serializer): JsonResponse
     {
-        $product = $productRepository->find($id);
         $context = ['groups' => ['product:read']];
         $jsonProduct = $serializer->serialize($product, 'json', $context);
 
         return new JsonResponse($jsonProduct, Response::HTTP_OK, [], true);
+    }
+
+    #[Route('v1/products/{id}', name: 'app_product_delete', methods: ['DELETE'])]
+    public function deleteById(Product $product, EntityManagerInterface $em): JsonResponse {
+        
+        $em->remove($product);
+        $em->flush();
+
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 }
