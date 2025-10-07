@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Product;
+use App\Repository\UserRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,11 +11,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class ProductController extends AbstractController
 {
-    #[Route('/v1/products', name: 'app_product')]
+    #[Route('/v1/products', name: 'app_product', methods: ['GET'])]
     public function getAll(Request $request, ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
         // Récupérer les paramètres de recherche et filtres
@@ -156,5 +158,31 @@ final class ProductController extends AbstractController
         $em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
+    }
+
+    #[Route('/v1/products', name: 'app_product_create', methods: ['POST'])]
+    public function create(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, 
+    UrlGeneratorInterface $urlGenerator, UserRepository $userRepository): JsonResponse
+    {
+        $data = $request->getContent();
+        $product = $serializer->deserialize($data, Product::class, 'json');
+        $em->persist($product);
+        $em->flush();
+
+        $content = $request->toArray();
+        $userId = $content['user_id'] ?? null;
+        if ($userId) {
+            $user = $userRepository->find($userId);
+            if ($user) {
+                $product->setOwner($user);
+            }
+        }
+
+        $context = ['groups' => ['product:read']];
+        $jsonProduct = $serializer->serialize($product, 'json', $context);
+
+        $location = $urlGenerator->generate('app_product_search_by_id', ['id' => $product->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        return new JsonResponse($jsonProduct, Response::HTTP_CREATED, ["Location" => $location], true);
     }
 }
