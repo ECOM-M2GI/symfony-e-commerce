@@ -160,23 +160,23 @@ final class ProductController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    #[Route('/v1/products', name: 'app_product_create', methods: ['POST'])]
-    public function create(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, 
+    #[Route('/v1/products', name: 'app_product_add', methods: ['POST'])]
+    public function add(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, 
     UrlGeneratorInterface $urlGenerator, UserRepository $userRepository): JsonResponse
     {
         $data = $request->getContent();
         $product = $serializer->deserialize($data, Product::class, 'json');
-        $em->persist($product);
-        $em->flush();
 
         $content = $request->toArray();
-        $userId = $content['user_id'] ?? null;
-        if ($userId) {
-            $user = $userRepository->find($userId);
+        $ownerName = $content['created_by_username'] ?? null;
+        if ($ownerName) {
+            $user = $userRepository->findOneBy(['username' => $ownerName]);
             if ($user) {
                 $product->setOwner($user);
             }
         }
+        $em->persist($product);
+        $em->flush();
 
         $context = ['groups' => ['product:read']];
         $jsonProduct = $serializer->serialize($product, 'json', $context);

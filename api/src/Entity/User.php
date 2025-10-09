@@ -19,7 +19,7 @@ class User
     #[Groups(['user:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 20, unique: true)]
     #[Groups(['user:read'])]
     private ?string $username = null;
 
