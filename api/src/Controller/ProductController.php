@@ -13,6 +13,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ProductController extends AbstractController
 {
@@ -162,13 +164,33 @@ final class ProductController extends AbstractController
 
     #[Route('/v1/products', name: 'app_product_add', methods: ['POST'])]
     public function add(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, 
-    UrlGeneratorInterface $urlGenerator, UserRepository $userRepository): JsonResponse
+    UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
     {
         $data = $request->getContent();
         $product = $serializer->deserialize($data, Product::class, 'json');
 
         $content = $request->toArray();
-        $ownerName = $content['created_by_username'] ?? null;
+
+        $errors = $validator->validate($product);
+        if (count($errors) > 0) {
+            // Format des erreurs pour le debugging
+            $errorMessages = [];
+            foreach ($errors as $error) {
+                $errorMessages[] = [
+                    'property' => $error->getPropertyPath(),
+                    'message' => $error->getMessage(),
+                ];
+            }
+            return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
+        }
+
+        if(isset($content['created_by_username'])) {
+            $ownerName = $content['created_by_username'];
+        } else {
+            $errorMessage = [['property' => 'created_by_username', 'message' => 'Le champ created_by_username est requis.']];
+            return new JsonResponse(['errors' => $errorMessage], Response::HTTP_BAD_REQUEST);
+        }
+
         if ($ownerName) {
             $user = $userRepository->findOneBy(['username' => $ownerName]);
             if ($user) {
@@ -185,4 +207,17 @@ final class ProductController extends AbstractController
 
         return new JsonResponse($jsonProduct, Response::HTTP_CREATED, ["Location" => $location], true);
     }
+
+    #[Route('/v1/products/{id}', name: 'app_product_patch', methods: ['PATCH'])]
+    public function patch(Request $request, SerializerInterface $serializer, Product $currentProduct, EntityManagerInterface $em): JsonResponse 
+    {
+        $patchedProduct = $serializer->deserialize($request->getContent(), 
+                Product::class, 
+                'json', 
+                [AbstractNormalizer::OBJECT_TO_POPULATE => $currentProduct]);
+
+        $em->persist($patchedProduct);
+        $em->flush();
+        return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
+   }
 }

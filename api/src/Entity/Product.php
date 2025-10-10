@@ -10,6 +10,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 use App\Model\CategoryEnum;
 use App\Model\DeliveryModeEnum;
 use App\Model\ConditionEnum;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -23,6 +24,8 @@ class Product
 
     #[ORM\Column(length: 200, nullable: true)]
     #[Groups(["product:read"])]
+    #[Assert\NotBlank(message: 'Le nom du produit ne peut pas être vide.')]
+    #[Assert\Length(min: 1, max: 200, maxMessage: 'Le nom du produit ne peut pas dépasser {{ limit }} caractères.', minMessage: 'Le nom du produit doit contenir au moins {{ limit }} caractère.')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
