@@ -8,10 +8,14 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\HasLifecycleCallbacks]
-class User
+#[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_USERNAME', fields: ['username'])]
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -19,9 +23,21 @@ class User
     #[Groups(['user:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(length: 20, unique: true)]
-    #[Groups(['user:read'])]
+    #[ORM\Column(length: 180)]
+    #[Groups(['user:read'])]    
     private ?string $username = null;
+
+    /**
+     * @var list<string> The user roles
+     */
+    #[ORM\Column]
+    private array $roles = [];
+
+    /**
+     * @var string The hashed password
+     */
+    #[ORM\Column]
+    private ?string $password = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Groups(['user:read'])]
@@ -35,14 +51,10 @@ class User
     #[Groups(['user:read'])]
     private ?string $email = null;
 
-    #[ORM\Column(length: 128)]
-    #[Groups(['user:read'])]
-    private ?string $password = null;
-
     #[ORM\Column]
     private ?\DateTime $created_at = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTime $updated_at = null;
 
     #[ORM\Column(length: 10, nullable: true)]
@@ -63,11 +75,6 @@ class User
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'owner')]
     private Collection $products;
 
-    public function __construct()
-    {
-        $this->products = new ArrayCollection();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -83,6 +90,70 @@ class User
         $this->username = $username;
 
         return $this;
+    }
+
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->username;
+    }
+
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
+
+        return array_unique($roles);
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    public function setRoles(array $roles): static
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Ensure the session doesn't contain actual password hashes by CRC32C-hashing them, as supported since Symfony 7.3.
+     */
+    public function __serialize(): array
+    {
+        $data = (array) $this;
+        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+
+        return $data;
+    }
+
+    #[\Deprecated]
+    public function eraseCredentials(): void
+    {
+        // @deprecated, to be removed when upgrading to Symfony 8
     }
 
     public function getFirstName(): ?string
@@ -121,18 +192,6 @@ class User
         return $this;
     }
 
-    public function getPassword(): ?string
-    {
-        return $this->password;
-    }
-
-    public function setPassword(string $password): static
-    {
-        $this->password = $password;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTime
     {
         return $this->created_at;
@@ -150,7 +209,7 @@ class User
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTime $updated_at): static
+    public function setUpdatedAt(?\DateTime $updated_at): static
     {
         $this->updated_at = $updated_at;
 
@@ -162,7 +221,7 @@ class User
         return $this->phone_number;
     }
 
-    public function setPhoneNumber(string $phone_number): static
+    public function setPhoneNumber(?string $phone_number): static
     {
         $this->phone_number = $phone_number;
 

@@ -20,10 +20,17 @@ use App\Model\DeliveryModeEnum;
 
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
 
 {
+    public function __construct(UserPasswordHasherInterface $passwordHasher)
+    {
+        $this->passwordHasher = $passwordHasher;
+
+    }
+
     public function load(ObjectManager $manager): void
     {
         $usersList = [];
@@ -33,7 +40,7 @@ class AppFixtures extends Fixture
             $user = new User();
             $user->setUsername('user' . $i);
             $user->setEmail('user' . $i . '@example.com');
-            $user->setPassword('password' . $i);
+            $user->setPassword($this->passwordHasher->hashPassword($user, 'password' . $i));
             $user->setFirstName('User' . $i);
             $user->setLastName('LastName' . $i);
             $user->setPhoneNumber('012345678' . $i);

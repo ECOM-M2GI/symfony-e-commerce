@@ -44,3 +44,9 @@ php bin/console doctrine:schema:update --force
 ```bash
 php bin/console doctrine:fixtures:load
 ```
+
+## Mise en prod
+
+### JWT
+
+#### Refaire le JWT avant la mise en prod avec une nouvelle passphrase, en preprod c'est password
