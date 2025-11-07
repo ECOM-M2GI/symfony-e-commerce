@@ -19,6 +19,10 @@ docker compose up webserver mariadb
 ```bash
 docker exec -it <mycontainer> sh
 ```
+Pour la console de dev
+```bash
+docker exec -it symfony-e-commerce-webserver-dev-1 sh
+```
 
 #### Database Export
 
