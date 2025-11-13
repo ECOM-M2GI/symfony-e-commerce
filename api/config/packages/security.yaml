@@ -25,8 +25,8 @@ security:
 
     access_control:
         - { path: ^/v1/accounts/login, roles: PUBLIC_ACCESS }
-        - { path: ^/v1/products, roles: PUBLIC_ACCESS, methods: [GET] }
-        - { path: ^/,       roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/v1/products, roles: PUBLIC_ACCESS, methods: ['GET'] }
+        - { path: ^/v1, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:

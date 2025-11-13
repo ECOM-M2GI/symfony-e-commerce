@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Repository\UserRepository;
+use App\Security\Voter\ProductVoter;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,14 +12,17 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\Security;
 
 final class ProductController extends AbstractController
 {
     #[Route('/v1/products', name: 'app_product', methods: ['GET'])]
+    #[IsGranted(ProductVoter::LIST, subject: null)]
     public function getAll(Request $request, ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
     {
         // Récupérer les paramètres de recherche et filtres
@@ -29,7 +33,6 @@ final class ProductController extends AbstractController
         $priceMin = $request->query->get('price_min') ? (float) $request->query->get('price_min') : null;
         $priceMax = $request->query->get('price_max') ? (float) $request->query->get('price_max') : null;
         $inStock = $request->query->get('in_stock') === 'true';
-        $sellerId = $request->query->get('seller_id') ? (int) $request->query->get('seller_id') : null;
         $isActive = $request->query->get('is_active');
         $ordering = $request->query->get('ordering', '-created_at');
         $popular = $request->query->get('popular') ? (int) $request->query->get('popular') : 0;
@@ -81,13 +84,6 @@ final class ProductController extends AbstractController
         // === FILTRE STOCK DISPONIBLE ===
         if ($inStock) {
             $queryBuilder->andWhere('p.stock_quantity > 0');
-        }
-
-        // === FILTRE PAR VENDEUR ===
-        if ($sellerId !== null) {
-            $queryBuilder
-                ->andWhere('p.user_id = :sellerId')
-                ->setParameter('sellerId', $sellerId);
         }
 
         // === GESTION DE LA VISIBILITÉ (is_active) ===
@@ -145,6 +141,7 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/v1/products/{id}', name: 'app_product_search_by_id', methods: ['GET'])]
+    #[IsGranted(ProductVoter::VIEW, subject: 'product')]
     public function findById(Product $product, SerializerInterface $serializer): JsonResponse
     {
         $context = ['groups' => ['product:read']];
@@ -154,6 +151,7 @@ final class ProductController extends AbstractController
     }
 
     #[Route('v1/products/{id}', name: 'app_product_delete', methods: ['DELETE'])]
+    #[IsGranted(ProductVoter::EDIT, subject: 'product')]
     public function deleteById(Product $product, EntityManagerInterface $em): JsonResponse {
         
         $em->remove($product);
@@ -163,6 +161,7 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/v1/products', name: 'app_product_add', methods: ['POST'])]
+    #[IsGranted(ProductVoter::CREATE, subject: null)]
     public function add(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, 
     UrlGeneratorInterface $urlGenerator, UserRepository $userRepository, ValidatorInterface $validator): JsonResponse
     {
@@ -184,19 +183,13 @@ final class ProductController extends AbstractController
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
 
-        if(isset($content['created_by_username'])) {
-            $ownerName = $content['created_by_username'];
+        $ownerName = $this->getUser()->getUserIdentifier();
+        if ($ownerName) {
+            $product->setOwner($this->getUser());
         } else {
-            $errorMessage = [['property' => 'created_by_username', 'message' => 'Le champ created_by_username est requis.']];
-            return new JsonResponse(['errors' => $errorMessage], Response::HTTP_BAD_REQUEST);
+            return new JsonResponse(['error' => 'Utilisateur non authentifié'], Response::HTTP_UNAUTHORIZED);
         }
 
-        if ($ownerName) {
-            $user = $userRepository->findOneBy(['username' => $ownerName]);
-            if ($user) {
-                $product->setOwner($user);
-            }
-        }
         $em->persist($product);
         $em->flush();
 
@@ -209,12 +202,13 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/v1/products/{id}', name: 'app_product_patch', methods: ['PATCH'])]
-    public function patch(Request $request, SerializerInterface $serializer, Product $currentProduct, EntityManagerInterface $em): JsonResponse 
+    #[IsGranted(ProductVoter::EDIT, subject: 'product')]
+    public function patch(Request $request, SerializerInterface $serializer, Product $product, EntityManagerInterface $em): JsonResponse 
     {
         $patchedProduct = $serializer->deserialize($request->getContent(), 
                 Product::class, 
                 'json', 
-                [AbstractNormalizer::OBJECT_TO_POPULATE => $currentProduct]);
+                [AbstractNormalizer::OBJECT_TO_POPULATE => $product]);
 
         $em->persist($patchedProduct);
         $em->flush();
