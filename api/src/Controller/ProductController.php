@@ -139,6 +139,29 @@ final class ProductController extends AbstractController
         $jsonProducts = $serializer->serialize($products, 'json', $context);
         return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
     }
+    #[Route('/v1/products/from-owner', name: 'app_product_from_owner', methods: ['GET'])]
+    #[IsGranted(ProductVoter::LIST_FROM_OWNER, subject: null)]
+    public function getAllFromOwner(ProductRepository $productRepository, SerializerInterface $serializer): JsonResponse
+    {
+        // Récupérer l'utilisateur connecté depuis le token JWT
+        $user = $this->getUser();
+        if (!$user) {
+            return new JsonResponse(['error' => 'Utilisateur non authentifié'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $queryBuilder = $productRepository->createQueryBuilder('p')
+            ->andWhere('p.owner = :user')
+            ->setParameter('user', $user)
+            ->orderBy('p.created_at', 'DESC');
+
+        // Exécuter la requête
+        $products = $queryBuilder->getQuery()->getResult();
+
+        // Sérialiser et retourner
+        $context = ['groups' => ['product:read']];
+        $jsonProducts = $serializer->serialize($products, 'json', $context);
+        return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
+    }
 
     #[Route('/v1/products/{id}', name: 'app_product_search_by_id', methods: ['GET'])]
     #[IsGranted(ProductVoter::VIEW, subject: 'product')]
@@ -182,7 +205,7 @@ final class ProductController extends AbstractController
             }
             return new JsonResponse(['errors' => $errorMessages], Response::HTTP_BAD_REQUEST);
         }
-
+        
         $ownerName = $this->getUser()->getUserIdentifier();
         if ($ownerName) {
             $product->setOwner($this->getUser());
@@ -213,5 +236,5 @@ final class ProductController extends AbstractController
         $em->persist($patchedProduct);
         $em->flush();
         return new JsonResponse(null, JsonResponse::HTTP_NO_CONTENT);
-   }
+    }
 }

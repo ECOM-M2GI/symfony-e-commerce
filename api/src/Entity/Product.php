@@ -23,29 +23,36 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 200, nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
     #[Assert\NotBlank(message: 'Le nom du produit ne peut pas être vide.')]
     #[Assert\Length(min: 1, max: 200, maxMessage: 'Le nom du produit ne peut pas dépasser {{ limit }} caractères.', minMessage: 'Le nom du produit doit contenir au moins {{ limit }} caractère.')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\NotBlank(message: 'La description du produit ne peut pas être vide.')]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\NotBlank(message: 'Le prix du produit ne peut pas être vide.')]
+    #[Assert\Range(min: 0, notInRangeMessage: 'Le prix du produit ne peut pas être négatif.')]
     private ?string $price = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\NotNull(message: 'La quantité en stock doit être définie.')]
+    #[Assert\Range(min: 0, notInRangeMessage: 'La quantité en stock ne peut pas être négative.')]
     private ?int $stock_quantity = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\NotNull(message: 'Le statut actif doit être défini.')]
     private ?bool $is_active = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\Range(min: 0, notInRangeMessage: 'Les frais de livraison ne peuvent pas être négatifs.')]
     private ?string $shipping_fee = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -57,20 +64,25 @@ class Product
     private ?\DateTime $updated_at = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\NotBlank(message: 'L\'URL de l\'image ne peut pas être vide.')]
+    #[Assert\Url(message: 'L\'URL de l\'image n\'est pas valide.')]
     private ?string $image_url = null;
 
     #[ORM\Column(type: 'string', enumType: DeliveryModeEnum::class, nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\NotBlank(message: 'Le mode de livraison ne peut pas être vide.')]
     private ?DeliveryModeEnum $delivery_mode = null;
 
     #[ORM\Column(type: 'string', enumType: CategoryEnum::class, nullable: true)]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
+    #[Assert\NotBlank(message: 'La catégorie ne peut pas être vide.')]
     private ?CategoryEnum $category = null;
 
     #[ORM\Column(type: 'string', enumType: ConditionEnum::class, nullable: true)]
+    #[Assert\NotBlank(message: 'Le statut du produit ne peut pas être vide.')]
     #[SerializedName('condition')]
-    #[Groups(["product:read"])]
+    #[Groups(["product:read", "product:write"])]
     private ?ConditionEnum $product_condition = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
@@ -219,6 +231,16 @@ class Product
     }
 
     public function setProductCondition(?ConditionEnum $condition): static
+    {
+        $this->product_condition = $condition;
+
+        return $this;
+    }
+
+    /**
+     * Alias pour la désérialisation depuis "condition" 
+     */
+    public function setCondition(?ConditionEnum $condition): static
     {
         $this->product_condition = $condition;
 
