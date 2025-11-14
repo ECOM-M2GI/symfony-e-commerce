@@ -42,7 +42,7 @@ export class ProductsService {
   // end helpers
 
   public allProducts(): Observable<ProductModel[]> {
-    const url = new URL('v1/products/', this.baseUrl).toString();
+    const url = new URL('v1/products', this.baseUrl).toString();
     return this.http.get<ProductModel[]>(url).pipe(
       map((res) => {
         res = res.map((p) => normalizeProduct(p));
@@ -52,14 +52,14 @@ export class ProductsService {
   }
 
   public getProduct(productId: string): Observable<ProductModel> {
-    const url = new URL(`v1/products/${productId}/`, this.baseUrl).toString();
+    const url = new URL(`v1/products/${productId}`, this.baseUrl).toString();
     return this.http.get<ProductModel>(url).pipe(
       map((p) => normalizeProduct(p)),
     );
   }
 
   public myProducts(): Observable<ProductModel[]> {
-    const url = new URL('v1/user/products/', this.baseUrl).toString();
+    const url = new URL('v1/user/products', this.baseUrl).toString();
     if (this.localAuth.isLoggedIn()) {
       return this.http
         .get<ProductModel[]>(url)
@@ -72,7 +72,7 @@ export class ProductsService {
   }
 
   public searchProducts(query: QueryParams): Observable<ProductModel[]> {
-    const url = new URL('v1/products/', this.baseUrl);
+    const url = new URL('v1/products', this.baseUrl);
     Object.entries(query).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
         url.searchParams.append(key, value.toString());
@@ -84,7 +84,7 @@ export class ProductsService {
   }
 
   public getLastProducts(): Observable<ProductModel[]> {
-    const url = new URL('v1/products/', this.baseUrl);
+    const url = new URL('v1/products', this.baseUrl);
     url.searchParams.set('ordering', '-created_at');
     return this.http
       .get<ProductModel[]>(url.toString())
@@ -92,7 +92,7 @@ export class ProductsService {
   }
 
   public getMostFamous(): Observable<ProductModel[]> {
-    const url = new URL('v1/products/', this.baseUrl);
+    const url = new URL('v1/products', this.baseUrl);
     url.searchParams.set('popular', '10');
     return this.http
       .get<ProductModel[]>(url.toString())
@@ -105,7 +105,7 @@ export class ProductsService {
 
     if (this.localAuth.isLoggedIn()) {
       return this.http.post<ProductModel>(
-        new URL('v1/products/', this.baseUrl).toString(),
+        new URL('v1/products', this.baseUrl).toString(),
         formData
       );
     } else {
@@ -117,7 +117,7 @@ export class ProductsService {
 
   public deleteProduct(productId: string): Observable<ProductModel> {
     return this.http.delete<ProductModel>(
-      new URL(`v1/products/${productId}/`, this.baseUrl).toString()
+      new URL(`v1/products/${productId}`, this.baseUrl).toString()
     );
   }
 
@@ -146,7 +146,7 @@ export class ProductsService {
     }
 
     return this.http.patch<ProductModel>(
-      new URL(`v1/products/${product_id}/`, this.baseUrl).toString(),
+      new URL(`v1/products/${product_id}`, this.baseUrl).toString(),
       formData
     );
   }
@@ -155,7 +155,7 @@ export class ProductsService {
     const formData = this.productFormData(payload);
 
     return this.http.put<ProductModel>(
-      new URL(`v1/products/${productId}/`, this.baseUrl).toString(),
+      new URL(`v1/products/${productId}`, this.baseUrl).toString(),
       formData
     );
   }
@@ -176,9 +176,7 @@ export class ProductsService {
     formData.append('condition', payload.condition);
     formData.append('category', payload.category);
 
-    if (payload.image) {
-      formData.append('image_url', payload.image, payload.image.name);
-    }
+    formData.append('image_url', "https://placehold.co/600x400");
 
     return formData;
   }

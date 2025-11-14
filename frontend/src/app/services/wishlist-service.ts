@@ -29,7 +29,7 @@ export class WishlistService {
 
   public getWishlist(): Observable<WishlistGetResponse | undefined> {
     if (this.localAuth.isLoggedIn()) {
-      const url = new URL('v1/wishlist/', this.baseUrl).toString();
+      const url = new URL('v1/wishlist', this.baseUrl).toString();
       return this.http
         .get<WishlistGetResponse>(url)
         .pipe(tap((wishlist) => this.setWishlist(wishlist)));
@@ -41,7 +41,7 @@ export class WishlistService {
   public addToWishlist(product_id: string): Observable<WishlistAddResponse> {
     if (this.localAuth.isLoggedIn()) {
       const payload: WishlistAddRequest = { product: product_id };
-      const url = new URL('v1/wishlist/', this.baseUrl).toString();
+      const url = new URL('v1/wishlist', this.baseUrl).toString();
       return this.http
         .post<WishlistAddResponse>(url, payload)
         .pipe(tap((wishlist) => this.setWishlist(wishlist)));
@@ -53,7 +53,7 @@ export class WishlistService {
 
   public removeFromWishlist(product_id: string): Observable<void> {
     if (this.localAuth.isLoggedIn()) {
-      const url = new URL('v1/wishlist/', this.baseUrl).toString();
+      const url = new URL('v1/wishlist', this.baseUrl).toString();
       return this.http.delete<void>(new URL(`?product=${product_id}`, url).toString()).pipe(
         tap(() => {
           const current = this.wishlist();
