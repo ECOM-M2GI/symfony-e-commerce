@@ -47,7 +47,7 @@ export class UserService {
       last_name: userForm.last_name?.value,
     }
 
-    return this.http.post<UserRegisterResponseModel>(new URL('v1/accounts/register/', this.baseUrl).toString(), body).pipe(
+    return this.http.post<UserRegisterResponseModel>(new URL('v1/accounts/register', this.baseUrl).toString(), body).pipe(
       tap({
         next: (res) => {
           if (res.token) {
@@ -75,7 +75,7 @@ export class UserService {
   }
 
   public getOwnProfile() {
-    return this.http.get<UserProfileResponseModel>(new URL('v1/user/', this.baseUrl).toString())
+    return this.http.get<UserProfileResponseModel>(new URL('v1/user', this.baseUrl).toString())
   }
 
   public getUserProfile(id: number) {
@@ -84,14 +84,14 @@ export class UserService {
   }
 
   public patchProfile(payload: UserProfileRequestModel) {
-    return this.http.patch<UserProfileResponseModel>(new URL('v1/user/', this.baseUrl).toString(), payload)
+    return this.http.patch<UserProfileResponseModel>(new URL('v1/user', this.baseUrl).toString(), payload)
   }
 
   public getPurchasesHistory() {
-    return this.http.get<UserPurchasesResponseModel>(new URL('v1/user/purchases/', this.baseUrl).toString())
+    return this.http.get<UserPurchasesResponseModel>(new URL('v1/user/purchases', this.baseUrl).toString())
   }
 
   public getSalesHistory() {
-    return this.http.get<UserSalesResponseModel>(new URL('v1/user/sales/', this.baseUrl).toString())
+    return this.http.get<UserSalesResponseModel>(new URL('v1/user/sales', this.baseUrl).toString())
   }
 }

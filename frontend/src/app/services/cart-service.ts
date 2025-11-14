@@ -40,7 +40,7 @@ export class CartService {
   }
 
   public allProducts(): Observable<CartModelResponse> {
-    const url = new URL('v1/cart/', this.baseUrl).toString();
+    const url = new URL('v1/cart', this.baseUrl).toString();
     return this.http.get<CartModelResponse>(url).pipe(
       map((cart) => this.normalizeNames(cart)),
       tap((cart) => this.setCart(cart))
@@ -48,7 +48,7 @@ export class CartService {
   }
 
   public clear(): Observable<any> {
-    const url = new URL('v1/cart/', this.baseUrl).toString();
+    const url = new URL('v1/cart', this.baseUrl).toString();
     return this.http.delete<any>(url).pipe(tap(() => this.clearCart()));
   }
 
@@ -73,7 +73,7 @@ export class CartService {
 
   public addItem(payload: CartUpdateItemRequest): Observable<CartModelResponse> {
     if (this.localAuth.isLoggedIn()) {
-      const url = new URL('v1/cart/', this.baseUrl).toString();
+      const url = new URL('v1/cart', this.baseUrl).toString();
       return this.http.post<CartModelResponse>(url, payload).pipe(
         map((cart) => this.normalizeNames(cart)),
         tap((cart) => this.setCart(cart))
@@ -96,7 +96,7 @@ export class CartService {
   }
 
   public pay(): Observable<CartModelResponse> {
-    const url = new URL('v1/cart/pay/', this.baseUrl).toString();
+    const url = new URL('v1/cart/pay', this.baseUrl).toString();
     return this.http.post<CartModelResponse>(url, {}).pipe(tap((cart) => this.setCart(undefined)));
   }
   public clearCart(): void {

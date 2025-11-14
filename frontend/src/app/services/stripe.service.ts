@@ -31,11 +31,11 @@ export class StripeService {
   }
 
   createCheckoutSession(cartData: any): Observable<{ client_secret: string }> {
-    return this.http.post<{ client_secret: string }>(new URL('v1/payments/create-checkout-session/', this.baserUrl).toString(), cartData);
+    return this.http.post<{ client_secret: string }>(new URL('v1/payments/create-checkout-session', this.baserUrl).toString(), cartData);
   }
 
   getSessionStatus(sessionId: string): Observable<{ status: string }> {
-    const url = new URL('v1/payments/session-status/', this.baserUrl);
+    const url = new URL('v1/payments/session-status', this.baserUrl);
     url.searchParams.append('session_id', sessionId);
     return this.http.get<{ status: string }>(url.toString());
   }
