@@ -24,11 +24,11 @@ export class UserService {
       username: userForm.username.value,
       password: userForm.password.value
     }
-    return this.http.post<UserLoginResponseModel>(new URL('v1/accounts/login/', this.baseUrl).toString(), body).pipe(
+    return this.http.post<UserLoginResponseModel>(new URL('v1/accounts/login', this.baseUrl).toString(), body).pipe(
       tap({
-        next: (user) => {
-          if (user.user_id) {
-            this.localAuth.login(body.username, body.password);
+        next: (res) => {
+          if (res.token) {
+            this.localAuth.login(res.token);
             this.cartService.allProducts().subscribe();
           }
         },
@@ -49,9 +49,9 @@ export class UserService {
 
     return this.http.post<UserRegisterResponseModel>(new URL('v1/accounts/register/', this.baseUrl).toString(), body).pipe(
       tap({
-        next: (user) => {
-          if (user.user_id) {
-            this.localAuth.login(body.username, body.password);
+        next: (res) => {
+          if (res.token) {
+            this.localAuth.login(res.token);
             this.cartService.allProducts().subscribe();
           }
         }

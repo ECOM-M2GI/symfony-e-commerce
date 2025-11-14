@@ -8,9 +8,7 @@ export interface UserLoginRequestModel {
 export type LoginForm = FormControlsOf<UserLoginRequestModel>;
 
 export interface UserLoginResponseModel {
-  message: string;
-  user_id: number;
-  username: string;
+  token: string;
 }
 
 export interface UserRegistrationRequest {

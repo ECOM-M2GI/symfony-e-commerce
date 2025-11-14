@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
+import { parseUsernameFromJwt } from '@app/common/api-helpers';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LocalAuthService {
 
-  login(username: string, password: string): void {
-    const authdata = window.btoa(username + ':' + password);
-    localStorage.setItem('user', JSON.stringify(authdata));
+  login(token: string): void {
+    localStorage.setItem('user', token);
   }
 
   logout(): void {
@@ -17,14 +17,14 @@ export class LocalAuthService {
   public get currentUserValue(): string | null {
     const user = localStorage.getItem('user');
     if (user) {
-      return JSON.parse(user);
+      return user;
     }
     return null;
   }
 
   public get username(): string | null {
     if (this.isLoggedIn()) {
-      return window.atob(this.currentUserValue!).split(':')[0];
+      return parseUsernameFromJwt(this.currentUserValue!);
     } else {
       return null;
     }

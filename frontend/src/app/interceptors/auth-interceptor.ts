@@ -9,7 +9,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   if (localAuth.isLoggedIn()) {
     const newReq = req.clone({
       setHeaders: {
-        Authorization: `Basic ${localAuth.currentUserValue || ''}`
+        Authorization: `Bearer ${localAuth.currentUserValue || ''}`
       }
     });
 

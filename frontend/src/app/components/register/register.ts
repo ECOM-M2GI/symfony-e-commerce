@@ -43,7 +43,7 @@ export class Register {
     this.userService.register(this.registerForm.controls).subscribe({
       next: (res) => {
         this.formHandler.clearsErrors();
-        if (res.user_id) {
+        if (res.token) {
           if (this.redirectUrl) {
             this.router.navigate([this.redirectUrl]);
           } else {
