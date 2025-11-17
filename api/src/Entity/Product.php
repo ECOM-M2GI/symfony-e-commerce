@@ -30,7 +30,6 @@ class Product
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     #[Groups(["product:read", "product:write"])]
-    #[Assert\NotBlank(message: 'La description du produit ne peut pas être vide.')]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
