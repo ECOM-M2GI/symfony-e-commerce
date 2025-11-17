@@ -228,7 +228,7 @@ final class ProductController extends AbstractController
     #[IsGranted(ProductVoter::EDIT, subject: 'product')]
     public function patch(Request $request, SerializerInterface $serializer, Product $product, EntityManagerInterface $em): JsonResponse 
     {
-        $patchedProduct = $serializer->deserialize($request->getContent(), 
+        $patchedProduct = $serializer->deserialize($request->getContent(),
                 Product::class, 
                 'json', 
                 [AbstractNormalizer::OBJECT_TO_POPULATE => $product]);

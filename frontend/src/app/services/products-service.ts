@@ -12,7 +12,7 @@ import { map, tap } from 'rxjs/operators';
 import { LocalAuthService } from './local-auth-service';
 import { Router } from '@angular/router';
 import { NotificationService } from './notification-service.service';
-import { normalizeProduct } from '@app/common/api-helpers';
+import { formDataToJson, normalizeProduct } from '@app/common/api-helpers';
 
 @Injectable({
   providedIn: 'root',
@@ -59,7 +59,7 @@ export class ProductsService {
   }
 
   public myProducts(): Observable<ProductModel[]> {
-    const url = new URL('v1/user/products', this.baseUrl).toString();
+    const url = new URL('v1/products/from-owner', this.baseUrl).toString();
     if (this.localAuth.isLoggedIn()) {
       return this.http
         .get<ProductModel[]>(url)
@@ -100,13 +100,11 @@ export class ProductsService {
   }
 
   public addProduct(payload: ProductModelRequest): Observable<ProductModel> {
-    // Create FormData for multipart/form-data upload
-    const formData = this.productFormData(payload);
 
     if (this.localAuth.isLoggedIn()) {
       return this.http.post<ProductModel>(
         new URL('v1/products', this.baseUrl).toString(),
-        formData
+        this.productPayload(payload)
       );
     } else {
       this.router.navigate(['/login']);
@@ -126,58 +124,67 @@ export class ProductsService {
     payload: PatchProductRequestModel,
     oldProduct?: ProductModel
   ): Observable<ProductModel> {
-    const formData = new FormData();
-    for (const key in payload) {
-      if (key === 'image') {
-        if (payload.image) {
-          formData.append('image_url', payload.image, payload.image.name);
-        }
-      } else if (oldProduct) {
-        if (
-          oldProduct[key as keyof ProductModel] !== payload[key as keyof PatchProductRequestModel]
-        ) {
-          formData.append(key, payload[key as keyof PatchProductRequestModel] as any);
-        } else {
-          continue;
-        }
-      } else if (payload[key as keyof PatchProductRequestModel] !== undefined) {
-        formData.append(key, payload[key as keyof PatchProductRequestModel] as any);
-      }
+    if (payload.image) {
+      delete payload.image;
     }
 
     return this.http.patch<ProductModel>(
       new URL(`v1/products/${product_id}`, this.baseUrl).toString(),
-      formData
+      this.productPayload(payload)
     );
   }
 
   public putProduct(productId: string, payload: ProductModelRequest): Observable<ProductModel> {
-    const formData = this.productFormData(payload);
-
     return this.http.put<ProductModel>(
       new URL(`v1/products/${productId}`, this.baseUrl).toString(),
-      formData
+      this.productPayload(payload)
     );
   }
 
-  productFormData(payload: ProductModelRequest): FormData {
-    const formData = new FormData();
+  productPayload(payload: Partial<ProductModelRequest>): ProductModelRequest {
+    const transformedPayload: any = {};
+
+    if (payload.image !== undefined) {
+      delete transformedPayload.image;
+
+      transformedPayload.image_url = "https://placehold.co/600x400";
+    }
+
+    console.log("payload: ");
+    Object.keys(payload).forEach(key => {
+      console.log(key, ': ', payload[key as keyof typeof payload]);
+    });
+
 
     // Append all fields to FormData
-    formData.append('name', payload.name);
-    if (payload.description) {
-      formData.append('description', payload.description);
+    if (payload.name !== undefined) {
+      transformedPayload.name = payload.name;
     }
-    formData.append('price', payload.price.toString());
-    formData.append('stock_quantity', payload.stock_quantity.toString());
-    formData.append('is_active', payload.is_active.toString());
-    formData.append('shipping_fee', payload.shipping_fee.toString());
-    formData.append('delivery_mode', payload.delivery_mode);
-    formData.append('condition', payload.condition);
-    formData.append('category', payload.category);
+    if (payload.description !== undefined) {
+      transformedPayload.description = payload.description;
+    }
+    if (payload.price !== undefined) {
+      transformedPayload.price = payload.price.toString();
+    }
+    if (payload.stock_quantity !== undefined) {
+      transformedPayload.stock_quantity = payload.stock_quantity;
+    }
+    if (payload.is_active !== undefined) {
+      transformedPayload.is_active = payload.is_active;
+    }
+    if (payload.shipping_fee !== undefined) {
+      transformedPayload.shipping_fee = payload.shipping_fee.toString();
+    }
+    if (payload.delivery_mode !== undefined) {
+      transformedPayload.delivery_mode = payload.delivery_mode;
+    }
+    if (payload.condition !== undefined) {
+      transformedPayload.condition = payload.condition;
+    }
+    if (payload.category !== undefined) {
+      transformedPayload.category = payload.category;
+    }
 
-    formData.append('image_url', "https://placehold.co/600x400");
-
-    return formData;
+    return transformedPayload;
   }
 }
