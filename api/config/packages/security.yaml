@@ -22,6 +22,8 @@ security:
             pattern:   ^/v1
             stateless: true
             jwt: ~
+            logout:
+                path: app_logout
 
     access_control:
         - { path: ^/v1/accounts/login, roles: PUBLIC_ACCESS }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { parseUsernameFromJwt } from '@app/common/api-helpers';
+import { isTokenExpired, parseUsernameFromJwt } from '@app/common/api-helpers';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +31,11 @@ export class LocalAuthService {
   }
 
   public isLoggedIn(): boolean {
+    if(isTokenExpired(this.currentUserValue)){
+      this.logout();
+      return false;
+    }
+
     return this.currentUserValue !== null;
   }
 }

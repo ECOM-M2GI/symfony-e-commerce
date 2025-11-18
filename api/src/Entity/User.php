@@ -20,11 +20,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
-    #[Groups(['user:read'])]    
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: 'Le nom d\'utilisateur ne peut pas être vide.')]
     private ?string $username = null;
 
     /**
@@ -37,18 +38,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var string The hashed password
      */
     #[ORM\Column]
+    #[Groups(['user:write'])]
+    #[Assert\NotBlank(message: 'Le mot de passe ne peut pas être vide.')]
     private ?string $password = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: 'Le prénom ne peut pas être vide.')]
     private ?string $first_name = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: 'Le nom ne peut pas être vide.')]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: 'Le mail ne peut pas être vide.')]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -58,15 +64,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTime $updated_at = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $phone_number = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
+    #[Assert\NotBlank(message: 'La date de naissance ne peut pas être vide.')]
     private ?\DateTime $date_of_birth = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:write'])]
     private ?string $adress = null;
 
     /**
