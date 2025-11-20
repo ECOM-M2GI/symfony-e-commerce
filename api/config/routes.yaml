@@ -6,3 +6,6 @@ controllers:
 
 api_login_check:
     path: /v1/accounts/login
+
+app_logout:
+    path: /v1/accounts/logout

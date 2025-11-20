@@ -10,6 +10,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -39,22 +40,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     #[Groups(['user:write'])]
-    #[Assert\NotBlank(message: 'Le mot de passe ne peut pas être vide.')]
+    #[Assert\NotBlank(message: 'Le mot de passe ne peut pas être vide.'), Assert\NotNull(message: 'Le mot de passe ne peut pas être vide.')]
     private ?string $password = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
-    #[Assert\NotBlank(message: 'Le prénom ne peut pas être vide.')]
+    #[Assert\NotBlank(message: 'Le prénom ne peut pas être vide.'), Assert\NotNull(message: 'Le prénom ne peut pas être vide.')]
+
     private ?string $first_name = null;
 
     #[ORM\Column(length: 20, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
-    #[Assert\NotBlank(message: 'Le nom ne peut pas être vide.')]
+    #[Assert\NotBlank(message: 'Le nom ne peut pas être vide.'), Assert\NotNull(message: 'Le nom ne peut pas être vide.')]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
-    #[Assert\NotBlank(message: 'Le mail ne peut pas être vide.')]
+    #[Assert\NotNull(message: 'Le mail ne peut pas être vide.'), Assert\NotBlank(message: 'Le mail ne peut pas être vide.')]
     private ?string $email = null;
 
     #[ORM\Column]
@@ -69,7 +71,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     #[Groups(['user:read', 'user:write'])]
-    #[Assert\NotBlank(message: 'La date de naissance ne peut pas être vide.')]
     private ?\DateTime $date_of_birth = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -81,17 +82,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'owner')]
     private Collection $products;
-
-    /**
-     * @var Collection<int, Order>
-     */
-    #[ORM\OneToMany(targetEntity: Order::class, mappedBy: 'user_id')]
-    private Collection $orders;
-
-    public function __construct()
-    {
-        $this->orders = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -311,35 +301,5 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function onPreUpdate(): void
     {
         $this->updated_at = new \DateTime();
-    }
-
-    /**
-     * @return Collection<int, Order>
-     */
-    public function getOrders(): Collection
-    {
-        return $this->orders;
-    }
-
-    public function addOrder(Order $order): static
-    {
-        if (!$this->orders->contains($order)) {
-            $this->orders->add($order);
-            $order->setUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeOrder(Order $order): static
-    {
-        if ($this->orders->removeElement($order)) {
-            // set the owning side to null (unless already changed)
-            if ($order->getUserId() === $this) {
-                $order->setUserId(null);
-            }
-        }
-
-        return $this;
     }
 }
