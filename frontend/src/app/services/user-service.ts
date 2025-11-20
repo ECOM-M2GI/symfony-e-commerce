@@ -60,18 +60,16 @@ export class UserService {
   }
 
   public logout() {
-    this.localAuth.logout();
-    this.router.navigate(['/authentification']);
     this.cartService.cart.set(undefined);
-    // return this.http.post<any>(new URL('v1/accounts/logout', this.baseUrl).toString(), {}).subscribe({
-    //   next: () => {
-    //     // todo clear login guard
-    //   },
-    //   error: (err) => {
-    //     console.error('Logout error', err);
-    //     this.router.navigate(['/login']).then();
-    //   }
-    // });
+    return this.http.post<any>(new URL('v1/accounts/logout', this.baseUrl).toString(), {}).subscribe({
+      next: () => {
+        this.localAuth.logout();
+        this.router.navigate(['/authentification']);
+      },
+      error: (err) => {
+        console.error('Logout error', err);
+      }
+    });
   }
 
   public getOwnProfile() {
