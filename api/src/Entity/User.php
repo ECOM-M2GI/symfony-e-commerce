@@ -21,7 +21,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
@@ -44,18 +44,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:patch'])]
     #[Assert\NotBlank(message: 'Le prénom ne peut pas être vide.'), Assert\NotNull(message: 'Le prénom ne peut pas être vide.')]
 
     private ?string $first_name = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:patch'])]
     #[Assert\NotBlank(message: 'Le nom ne peut pas être vide.'), Assert\NotNull(message: 'Le nom ne peut pas être vide.')]
     private ?string $last_name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:patch'])]
     #[Assert\NotNull(message: 'Le mail ne peut pas être vide.'), Assert\NotBlank(message: 'Le mail ne peut pas être vide.')]
     private ?string $email = null;
 
@@ -66,15 +66,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTime $updated_at = null;
 
     #[ORM\Column(length: 10, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:patch'])]
     private ?string $phone_number = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:patch'])]
     private ?\DateTime $date_of_birth = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['user:read', 'user:write'])]
+    #[Groups(['user:read', 'user:write', 'user:patch'])]
     private ?string $adress = null;
 
     /**
