@@ -27,6 +27,10 @@ final class AccountController extends AbstractController
 
         $content = $request->toArray();
 
+        if(!isset($content['password_confirm']) || $content['password_confirm'] !== $content['password']) {
+            return new JsonResponse(['errors' => ['password_confirm' => 'La confirmation du mot de passe ne correspond pas.']], Response::HTTP_BAD_REQUEST);
+        }
+
         $errors = $validator->validate($user);
         if (count($errors) > 0) {
             // Format des erreurs pour le debugging
