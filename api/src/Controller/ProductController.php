@@ -36,6 +36,8 @@ final class ProductController extends AbstractController
         $isActive = $request->query->get('is_active');
         $ordering = $request->query->get('ordering', '-created_at');
         $popular = $request->query->get('popular') ? (int) $request->query->get('popular') : 0;
+        $page = $request->query->get('page', 1);
+        $limit = $request->query->get('limit', 20);
 
         // Construire la requête avec les filtres
         $queryBuilder = $productRepository->createQueryBuilder('p');
@@ -113,7 +115,13 @@ final class ProductController extends AbstractController
         [$field, $direction] = explode(' ', $orderBy);
         $queryBuilder->orderBy($field, $direction);
 
-        // Exécuter la requête
+        if(!empty($limit) && $limit > 0) {
+            $queryBuilder->setMaxResults($limit);
+            if(!empty($page) && $page > 0) {
+                $queryBuilder->setFirstResult(($page - 1) * $limit);
+            }
+        }
+
         $products = $queryBuilder->getQuery()->getResult();
 
         // === GESTION DU MODE "POPULAIRE" (sélection aléatoire) ===
