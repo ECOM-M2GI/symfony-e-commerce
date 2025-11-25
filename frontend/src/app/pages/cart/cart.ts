@@ -287,7 +287,7 @@ export class Cart {
   }
 
   goCheckout() {
-    this.router.navigate(['/payment']);
+    this.router.navigate(['/checkout-success']);
   }
   viewProduct(id: string) {
     this.router.navigate(['/products', id]);

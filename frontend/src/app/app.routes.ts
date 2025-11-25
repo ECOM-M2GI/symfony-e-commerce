@@ -8,7 +8,6 @@ import { Account } from './pages/account/account';
 import { ProductList } from '@app/pages/product-list/product-list';
 import { VendorComponent } from '@app/pages/vendor/vendor';
 import { ProductDetailsComponent } from '@app/pages/product-details/product-details';
-import { Checkout } from './pages/checkout/checkout';
 import { CheckoutSuccess } from './pages/checkout-success/checkout-success';
 import { Wishlist } from './pages/wishlist/wishlist';
 import { Policy } from './pages/footer/policy/policy';
@@ -26,7 +25,6 @@ export const routes: Routes = [
   { path: 'account', component: Account, canActivate: [authInGuard] },
   { path: 'payment', component: Payment, canActivate: [authInGuard] },
   { path: 'inventory-conflict', component: InventoryConflict, canActivate: [authInGuard] },
-  { path: 'checkout', component: Checkout, canActivate: [authInGuard] },
   { path: 'checkout-success', component: CheckoutSuccess, canActivate: [authInGuard] },
   { path: 'wishlist', component: Wishlist, canActivate: [authInGuard] },
   { path: 'products', component: ProductList },

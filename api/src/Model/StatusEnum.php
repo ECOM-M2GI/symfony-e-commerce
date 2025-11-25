@@ -3,9 +3,9 @@ namespace App\Model;
 
 enum StatusEnum: string
 {
-    case Cart = 'cart';
-    case Pending = 'pending';
-    case Paid = 'paid';
-    case Canceled = 'canceled';
-    case Completed = 'completed';
+    case Cart = 'CART';
+    case Pending = 'PENDING';
+    case Paid = 'PAID';
+    case Canceled = 'CANCELED';
+    case Completed = 'COMPLETED';
 }

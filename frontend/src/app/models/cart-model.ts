@@ -1,6 +1,6 @@
 export interface CartModelResponse {
   id: number;
-  status: string;
+  status: 'CART' | 'PAID' | 'SHIPPED' | 'CANCELED';
   items: CartLineResponse[];
   shipping_total: number;
   free_shipping_threshold: number;

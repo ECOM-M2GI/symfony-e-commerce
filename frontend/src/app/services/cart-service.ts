@@ -97,7 +97,7 @@ export class CartService {
 
   public pay(): Observable<CartModelResponse> {
     const url = new URL('v1/cart/pay', this.baseUrl).toString();
-    return this.http.post<CartModelResponse>(url, {}).pipe(tap((cart) => this.setCart(undefined)));
+    return this.http.post<CartModelResponse>(url, {});
   }
   public clearCart(): void {
     this.setCart(undefined);

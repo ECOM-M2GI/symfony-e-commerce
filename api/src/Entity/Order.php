@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrderRepository::class)]
 #[ORM\Table(name: '`order`')]
+#[ORM\HasLifecycleCallbacks]
 class Order
 {
     #[ORM\Id]
@@ -37,7 +38,7 @@ class Order
     /**
      * @var Collection<int, OrderItem>
      */
-    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order_id', orphanRemoval: true)]
+    #[ORM\OneToMany(targetEntity: OrderItem::class, mappedBy: 'order_id', cascade: ['persist'], orphanRemoval: true)]
     private Collection $orderItems;
 
     public function __construct()
@@ -141,14 +142,18 @@ class Order
     }
     
     #[ORM\PrePersist]
-    public function onPrePersist(): void
+    public function setCreatedAtValue(): void
     {
-        $this->created_at = new \DateTime();
-        $this->updated_at = new \DateTime();
+        if ($this->created_at === null) {
+            $this->created_at = new \DateTime();
+        }
+        if ($this->updated_at === null) {
+            $this->updated_at = new \DateTime();
+        }
     }
 
     #[ORM\PreUpdate]
-    public function onPreUpdate(): void
+    public function setUpdatedAtValue(): void
     {
         $this->updated_at = new \DateTime();
     }
