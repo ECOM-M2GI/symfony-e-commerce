@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -87,6 +89,17 @@ class Product
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
+
+    /**
+     * @var Collection<int, WishlistItem>
+     */
+    #[ORM\OneToMany(targetEntity: WishlistItem::class, mappedBy: 'product_id', orphanRemoval: true)]
+    private Collection $wishlistItems;
+
+    public function __construct()
+    {
+        $this->wishlistItems = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -276,6 +289,36 @@ class Product
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, WishlistItem>
+     */
+    public function getWishlistItems(): Collection
+    {
+        return $this->wishlistItems;
+    }
+
+    public function addWishlistItem(WishlistItem $wishlistItem): static
+    {
+        if (!$this->wishlistItems->contains($wishlistItem)) {
+            $this->wishlistItems->add($wishlistItem);
+            $wishlistItem->setProductId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeWishlistItem(WishlistItem $wishlistItem): static
+    {
+        if ($this->wishlistItems->removeElement($wishlistItem)) {
+            // set the owning side to null (unless already changed)
+            if ($wishlistItem->getProductId() === $this) {
+                $wishlistItem->setProductId(null);
+            }
+        }
 
         return $this;
     }

@@ -83,6 +83,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'owner')]
     private Collection $products;
 
+    #[ORM\OneToOne(mappedBy: 'user_id', cascade: ['persist', 'remove'])]
+    private ?Wishlist $wishlist = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -301,5 +304,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function onPreUpdate(): void
     {
         $this->updated_at = new \DateTime();
+    }
+
+    public function getWishlist(): ?Wishlist
+    {
+        return $this->wishlist;
+    }
+
+    public function setWishlist(Wishlist $wishlist): static
+    {
+        // set the owning side of the relation if necessary
+        if ($wishlist->getUserId() !== $this) {
+            $wishlist->setUserId($this);
+        }
+
+        $this->wishlist = $wishlist;
+
+        return $this;
     }
 }
