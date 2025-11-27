@@ -184,17 +184,10 @@ final class ProductController extends AbstractController
         // Exécuter la requête
         $products = $queryBuilder->getQuery()->getResult();
 
-        // Sérialiser et retourner avec structure data + isLastPage
+        // Sérialiser et retourner
         $context = ['groups' => ['product:read']];
-        $serializedProducts = $serializer->serialize($products, 'json', $context);
-        $productsArray = json_decode($serializedProducts, true);
-        
-        $response = [
-            'data' => $productsArray,
-            'isLastPage' => true // Toujours true car pas de pagination sur from-owner
-        ];
-        
-        return new JsonResponse($response, Response::HTTP_OK);
+        $jsonProducts = $serializer->serialize($products, 'json', $context);
+        return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
     }
 
     #[Route('/v1/products/{id}', name: 'app_product_search_by_id', methods: ['GET'])]
