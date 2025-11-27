@@ -45,8 +45,22 @@ RUN wget https://getcomposer.org/download/2.8.3/composer.phar \
 COPY --from=node-build /app/dist/${PROJECT_NAME}/browser /var/www/html
 
 COPY api/ /var/www/api
+# Copy .env file to the parent directory where Symfony expects it
+COPY api/.env /var/www/.env
 COPY server/apache.conf /etc/apache2/sites-enabled/000-default.conf 
 
 WORKDIR /var/www
+
+# Set permissions for Symfony cache and logs
+RUN mkdir -p /var/www/api/var/cache /var/www/api/var/log \
+    && chown -R www-data:www-data /var/www/api/var \
+    && chmod -R 775 /var/www/api/var
+
+# Set permissions for JWT keys if they exist
+RUN if [ -d /var/www/api/config/jwt ]; then \
+        chown -R www-data:www-data /var/www/api/config/jwt && \
+        chmod 640 /var/www/api/config/jwt/private.pem 2>/dev/null || true && \
+        chmod 644 /var/www/api/config/jwt/public.pem 2>/dev/null || true; \
+    fi
 
 CMD ["sh", "-c", "composer install -d /var/www/api --no-interaction --optimize-autoloader && apache2-foreground"]
