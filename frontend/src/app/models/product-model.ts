@@ -18,7 +18,12 @@ export interface ProductModel {
   updated_at: Date;
 }
 
-export interface QueryParams {
+export interface ProductListResponse {
+  data: ProductModel[];
+  isLastPage: boolean;
+}
+
+export interface ProductQueryParams {
   name?: string;
   price_min?: number;
   price_max?: number;
@@ -28,6 +33,8 @@ export interface QueryParams {
   category?: string;
   in_stock?: boolean;
   seller_id?: string;
+  page?: number;
+  limit?: number;
 }
 
 enum SortBy {

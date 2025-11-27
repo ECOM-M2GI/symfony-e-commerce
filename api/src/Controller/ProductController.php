@@ -37,7 +37,7 @@ final class ProductController extends AbstractController
         $ordering = $request->query->get('ordering', '-created_at');
         $popular = $request->query->get('popular') ? (int) $request->query->get('popular') : 0;
         $page = $request->query->get('page', 1);
-        $limit = $request->query->get('limit', 20);
+        $limit = $request->query->get('limit', 10);
 
         // Construire la requête avec les filtres
         $queryBuilder = $productRepository->createQueryBuilder('p');
@@ -115,6 +115,10 @@ final class ProductController extends AbstractController
         [$field, $direction] = explode(' ', $orderBy);
         $queryBuilder->orderBy($field, $direction);
 
+        // Compter le total avant pagination pour calculer isLastPage
+        $totalQuery = clone $queryBuilder;
+        $totalCount = count($totalQuery->getQuery()->getResult());
+
         if(!empty($limit) && $limit > 0) {
             $queryBuilder->setMaxResults($limit);
             if(!empty($page) && $page > 0) {
@@ -142,10 +146,25 @@ final class ProductController extends AbstractController
             $products = $popularProducts;
         }
 
-        // Sérialiser et retourner
+        // Calculer isLastPage
+        $isLastPage = true;
+        if (!empty($limit) && $limit > 0 && !empty($page) && $page > 0) {
+            $currentPage = (int) $page;
+            $itemsPerPage = (int) $limit;
+            $isLastPage = ($currentPage * $itemsPerPage) >= $totalCount;
+        }
+
+        // Sérialiser et retourner avec structure data + isLastPage
         $context = ['groups' => ['product:read']];
-        $jsonProducts = $serializer->serialize($products, 'json', $context);
-        return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
+        $serializedProducts = $serializer->serialize($products, 'json', $context);
+        $productsArray = json_decode($serializedProducts, true);
+        
+        $response = [
+            'data' => $productsArray,
+            'isLastPage' => $isLastPage
+        ];
+        
+        return new JsonResponse($response, Response::HTTP_OK);
     }
     #[Route('/v1/products/from-owner', name: 'app_product_from_owner', methods: ['GET'])]
     #[IsGranted(ProductVoter::LIST_FROM_OWNER, subject: null)]
@@ -165,10 +184,17 @@ final class ProductController extends AbstractController
         // Exécuter la requête
         $products = $queryBuilder->getQuery()->getResult();
 
-        // Sérialiser et retourner
+        // Sérialiser et retourner avec structure data + isLastPage
         $context = ['groups' => ['product:read']];
-        $jsonProducts = $serializer->serialize($products, 'json', $context);
-        return new JsonResponse($jsonProducts, Response::HTTP_OK, [], true);
+        $serializedProducts = $serializer->serialize($products, 'json', $context);
+        $productsArray = json_decode($serializedProducts, true);
+        
+        $response = [
+            'data' => $productsArray,
+            'isLastPage' => true // Toujours true car pas de pagination sur from-owner
+        ];
+        
+        return new JsonResponse($response, Response::HTTP_OK);
     }
 
     #[Route('/v1/products/{id}', name: 'app_product_search_by_id', methods: ['GET'])]

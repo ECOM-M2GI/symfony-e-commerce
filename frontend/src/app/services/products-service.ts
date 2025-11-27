@@ -3,7 +3,8 @@ import {
   PatchProductRequestModel,
   ProductModel,
   ProductModelRequest,
-  QueryParams,
+  ProductQueryParams,
+  ProductListResponse,
 } from '@app/models/product-model';
 import { environment } from '@app/common/environment';
 import { HttpClient } from '@angular/common/http';
@@ -41,16 +42,6 @@ export class ProductsService {
   }
   // end helpers
 
-  public allProducts(): Observable<ProductModel[]> {
-    const url = new URL('v1/products', this.baseUrl).toString();
-    return this.http.get<ProductModel[]>(url).pipe(
-      map((res) => {
-        res = res.map((p) => normalizeProduct(p));
-        return res;
-      })
-    );
-  }
-
   public getProduct(productId: string): Observable<ProductModel> {
     const url = new URL(`v1/products/${productId}`, this.baseUrl).toString();
     return this.http.get<ProductModel>(url).pipe(
@@ -71,7 +62,7 @@ export class ProductsService {
     }
   }
 
-  public searchProducts(query: QueryParams): Observable<ProductModel[]> {
+  public searchProducts(query: ProductQueryParams): Observable<ProductListResponse> {
     const url = new URL('v1/products', this.baseUrl);
     Object.entries(query).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
@@ -79,24 +70,29 @@ export class ProductsService {
       }
     });
     return this.http
-      .get<ProductModel[]>(url.toString())
-      .pipe(map((res) => res.map((p) => normalizeProduct(p))));
+      .get<ProductListResponse>(url.toString())
+      .pipe(map((res) => {
+        return {
+          data: res.data.map((p) => normalizeProduct(p)),
+          isLastPage: res.isLastPage
+        };
+      }));
   }
 
   public getLastProducts(): Observable<ProductModel[]> {
     const url = new URL('v1/products', this.baseUrl);
     url.searchParams.set('ordering', '-created_at');
     return this.http
-      .get<ProductModel[]>(url.toString())
-      .pipe(map((res) => res.map((p) => normalizeProduct(p))));
+      .get<ProductListResponse>(url.toString())
+      .pipe(map((res) => res.data.map((p) => normalizeProduct(p))));
   }
 
   public getMostFamous(): Observable<ProductModel[]> {
     const url = new URL('v1/products', this.baseUrl);
     url.searchParams.set('popular', '10');
     return this.http
-      .get<ProductModel[]>(url.toString())
-      .pipe(map((res) => res.map((p) => normalizeProduct(p))));
+      .get<ProductListResponse>(url.toString())
+      .pipe(map((res) => res.data.map((p) => normalizeProduct(p))));
   }
 
   public addProduct(payload: ProductModelRequest): Observable<ProductModel> {

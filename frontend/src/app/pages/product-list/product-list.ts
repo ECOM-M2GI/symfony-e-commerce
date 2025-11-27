@@ -1,5 +1,5 @@
 import { Component, signal, computed, inject, OnInit } from '@angular/core';
-import { ProductModel, QueryParams, Category } from '@app/models/product-model';
+import { ProductModel, ProductQueryParams, Category } from '@app/models/product-model';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProductsService } from '@app/services/products-service';
@@ -18,6 +18,8 @@ interface FilterState {
   searchQuery: string;
   in_stock: boolean;
   ordering: 'price' | '-price' | 'created_at' | '-created_at' | 'name' | '-name' | 'stock_quantity' | '-stock_quantity' | '';
+  limit: number;
+  page: number;
 }
 
 @Component({
@@ -48,7 +50,9 @@ export class ProductList implements OnInit {
     deliveryMode: '',
     searchQuery: '',
     in_stock: false,
-    ordering: ''
+    ordering: '',
+    limit: 20,
+    page: 1,
   };
 
   // Parameter mapping for URL to filter conversion
@@ -60,13 +64,16 @@ export class ProductList implements OnInit {
     delivery_mode: 'deliveryMode',
     category: 'category',
     in_stock: 'inStock',
-    ordering: 'ordering'
+    ordering: 'ordering',
+    limit : 'limit',
+    page : 'page',
   } as const;
 
   // Filter state
   filters = signal<FilterState>(this.DEFAULT_FILTERS);
   allProducts = signal<ProductModel[]>([]);
   isLoading = signal(true);
+  isLastPage = signal(false);
 
   // Computed filtered and sorted products
   filteredProducts = computed(() => {
@@ -128,22 +135,20 @@ export class ProductList implements OnInit {
     const searchQuery = this.buildSearchQuery();
     const hasSearchParams = Object.keys(searchQuery).length > 0;
 
-    const searchObservable = hasSearchParams
-      ? this.productsService.searchProducts(searchQuery)
-      : this.productsService.allProducts();
 
-    searchObservable.subscribe((products) => {
-      this.allProducts.set(products);
+    this.productsService.searchProducts(searchQuery).subscribe((res) => {
+      this.allProducts.set(res.data);
+      this.isLastPage.set(res.isLastPage);
       this.isLoading.set(false);
     });
   }
 
-  private buildSearchQuery(): QueryParams {
+  private buildSearchQuery(): ProductQueryParams {
     const currentFilters = this.filters();
-    const searchQuery: QueryParams = {};
+    const searchQuery: ProductQueryParams = {};
 
-    // Mapping from FilterState to QueryParams
-    const filterToQueryMap: [keyof FilterState, keyof QueryParams][] = [
+    // Mapping from FilterState to ProductQueryParams
+    const filterToQueryMap: [keyof FilterState, keyof ProductQueryParams][] = [
       ['searchQuery', 'name'],
       ['price_min', 'price_min'],
       ['price_max', 'price_max'],
@@ -151,18 +156,18 @@ export class ProductList implements OnInit {
       ['deliveryMode', 'delivery_mode'],
       ['category', 'category'],
       ['in_stock', 'in_stock'],
-      ['ordering', 'ordering']
+      ['ordering', 'ordering'],
+      ['limit', 'limit'],
+      ['page', 'page'],
     ];
 
     for (const [filterKey, queryParamKey] of filterToQueryMap) {
       let filterValue = currentFilters[filterKey] as unknown;
 
-      // Normalizuj stringi: redukuj wielokrotne spacje i przytnij brzegi
       if (typeof filterValue === 'string') {
         filterValue = this.normalizeString(filterValue as string);
       }
 
-      // Dodaj tylko znaczące wartości (nie puste stringi, nie null/undefined)
       const isMeaningful =
         filterValue !== null &&
         filterValue !== undefined &&
@@ -177,9 +182,13 @@ export class ProductList implements OnInit {
   }
 
   updateFilter(key: keyof FilterState, value: any) {
+    // Reset page to 1 when changing filters or sorting (except when updating page itself)
+    const shouldResetPage = key !== 'page';
+    
     this.filters.update((current) => ({
       ...current,
       [key]: value,
+      ...(shouldResetPage && { page: 1 }),
     }));
     this.pushFiltersToUrl();
   }
@@ -191,6 +200,17 @@ export class ProductList implements OnInit {
 
   viewProduct(product: ProductModel) {
     this.router.navigate(['/products', product.id]);
+  }
+
+  chgePage(number: number) {
+    const newPage = Number.parseInt((this.filters().page as any)) + number;
+    console.log(typeof this.filters().page);
+    this.updateFilter('page', newPage);
+    this.pushFiltersToUrl();
+  }
+
+  isFirstPage(): boolean {
+    return Number.parseInt(this.filters().page as any) <= 1;
   }
 
   onPriceInput(type: 'price_min' | 'price_max', event: Event) {
@@ -213,7 +233,7 @@ export class ProductList implements OnInit {
     for (const k of keys) {
       if (ignore.includes(k)) continue;
 
-      if (k === 'price_min' || k === 'price_max') {
+      if (k === 'price_min' || k === 'price_max' || k === 'limit' || k === 'page') {
         const av = (a[k] ?? null) as number | null;
         const bv = (b[k] ?? null) as number | null;
         if (av !== bv) return false;

@@ -209,12 +209,15 @@
           [isInWishlist]="isInWishlist(product.id)" (toggleWishlist)="toggleWishlist($event)"></app-product-card>
         }
       </div>
-      <div class="join w-full flex justify-center mt-6">
-        <button class="join-item btn">«</button>
-        <button class="join-item btn">Page 22</button>
-        <button class="join-item btn">»</button>
-      </div>
+      @if (!isFirstPage() || !isLastPage()) {
+        <div class="join w-full flex justify-center mt-6">
+          <button [disabled]="isFirstPage()" type="button" (click)="chgePage(-1)" class="join-item btn">«</button>
+          <div class="join-item btn bg-transparent border-transparent hover:border-transparent hover:bg-transparent">{{ filters().page }}</div>
+          <button [disabled]="isLastPage()" type="button" (click)="chgePage(1)" class="join-item btn">»</button>
+        </div>
       }
+      }
+    
     </div>
   </div>
 </div>
