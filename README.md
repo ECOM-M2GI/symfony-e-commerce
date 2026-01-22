@@ -51,6 +51,8 @@ php bin/console doctrine:fixtures:load
 
 ## Mise en prod
 
+test
+
 ### JWT
 
 #### Remettre un timeout sur le token dans api/config/packages/lexik_jwt_authentication.yaml
