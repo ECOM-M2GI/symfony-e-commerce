@@ -7,6 +7,7 @@ on:
 env:
   API_URL: https://annonces-api.babolat-loic.fr
 
+
 jobs:
   build:
     # Run only when the pull request was merged (not just closed)
@@ -40,6 +41,7 @@ jobs:
           retention-days: 1
         
   deploy:
+    
     needs: build
     runs-on: ubuntu-latest
     # deploy will only run when build ran (build already gated by merged check)
@@ -48,3 +50,12 @@ jobs:
         uses: actions/download-artifact@v5
         with:
           name: dist
+
+      - name: Deploy to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_FRONT_SERVER }}
+          username: ${{ secrets.FTP_FRONT_USER }}
+          password: ${{ secrets.FTP_FRONT_PWD }}
+          local-dir: ./dist
+          protocol: ftps
