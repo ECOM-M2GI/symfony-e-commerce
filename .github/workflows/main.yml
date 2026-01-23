@@ -57,4 +57,5 @@ jobs:
           server: ${{ secrets.FTP_FRONT_SERVER }}
           username: ${{ secrets.FTP_FRONT_USER }}
           password: ${{ secrets.FTP_FRONT_PWD }}
+          local-dir: ./dist/ebey/browser/
           protocol: ftps
