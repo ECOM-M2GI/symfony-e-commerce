@@ -1,4 +1,9 @@
 # See https://docs.github.com/get-started/getting-started-with-git/ignoring-files for more about ignoring files.
+.idea/copilot.data.migration.ask2agent.xml
+.idea/laravel-idea-personal.xml
+.idea/php.xml
+.idea/vcs.xml
+.idea/inspectionProfiles/Project_Default.xml
 
 # Compiled output
 /dist
