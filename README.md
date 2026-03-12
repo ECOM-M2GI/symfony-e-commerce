@@ -60,3 +60,5 @@ test
 #### Ajouter la configuration nécessaire pour apache : [Doc Symfony](https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html#important-note-for-apache-users)
 
 #### Refaire le JWT avant la mise en prod avec une nouvelle passphrase, en preprod c'est password
+
+https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html#generate-the-ssl-keys
