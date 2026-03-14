@@ -14,6 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup CI environment
+        run: cp api/.env.ci api/.env.local
+
       - name: Install dependencies
         uses: "php-actions/composer@v6"
         env:
