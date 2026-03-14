@@ -56,5 +56,4 @@ jobs:
           username: ${{ secrets.FTP_FRONT_USER }}
           password: ${{ secrets.FTP_FRONT_PWD }}
           local-dir: ./ebey/browser/
-          dry-run: true
           protocol: ftps

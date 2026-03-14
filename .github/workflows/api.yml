@@ -1,0 +1,50 @@
+name: Build and deploy API
+on:
+  pull_request:
+    branches:
+      - api-prod
+    types: [closed]
+
+jobs:
+  build:
+    # Run only when the pull request was merged (not just closed)
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        uses: "php-actions/composer@v6"
+        env:
+          COMPOSER: "composer.json"
+        with:
+          php_version: "8.2"
+          args: "--ignore-platform-reqs --optimize-autoloader --no-interaction"
+          working_dir: "/api"
+
+      - name: Upload Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: api/
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    # deploy will only run when build ran (build already gated by merged check)
+    steps:
+      - name: Download Build
+        uses: actions/download-artifact@v5
+        with:
+          name: build
+
+      - name: Deploy to FTP server
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.0
+        with:
+          server: ${{ secrets.FTP_API_SERVER }}
+          username: ${{ secrets.FTP_API_USER }}
+          password: ${{ secrets.FTP_API_PWD }}
+          local-dir: ./
+          protocol: ftps
