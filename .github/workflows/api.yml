@@ -21,7 +21,7 @@ jobs:
         with:
           php_version: "8.2"
           args: "--ignore-platform-reqs --optimize-autoloader --no-interaction"
-          working_dir: "/api"
+          working_dir: "api"
 
       - name: Upload Build
         uses: actions/upload-artifact@v4
