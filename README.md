@@ -8,7 +8,7 @@
 docker compose up frontend-dev webserver-dev mariadb
 ```
 
-### Getting started on production mode
+### Getting started on production mode 
 
 ```bash
 docker compose up webserver mariadb
