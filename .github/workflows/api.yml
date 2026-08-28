@@ -6,13 +6,20 @@ on:
 
 jobs:
   build:
-    if: github.ref_type == 'tag' && github.ref_name =~ /^api-\d+\.\d+$/
+    if: github.ref_type == 'tag' && startsWith(github.ref_name, 'api-')
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Verify tag format
+        run: |
+          if [[ ! "${{ github.ref_name }}" =~ ^api-[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Tag must match api-X.X format"
+            exit 1
+          fi
 
       - name: Verify tag is on main branch
         run: |
