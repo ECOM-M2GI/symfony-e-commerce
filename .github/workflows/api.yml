@@ -1,18 +1,25 @@
 name: Build and deploy API
 on:
-  pull_request:
-    branches:
-      - api-prod
-    types: [closed]
+  push:
+    tags:
+      - 'api-*'
 
 jobs:
   build:
-    # Run only when the pull request was merged (not just closed)
-    if: github.event.pull_request.merged == true
+    if: github.ref_type == 'tag' && github.ref_name =~ /^api-\d+\.\d+$/
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag is on main branch
+        run: |
+          if ! git branch -r --contains ${{ github.sha }} | grep -q 'origin/main'; then
+            echo "Error: Tag must be on main branch"
+            exit 1
+          fi
 
       - name: Setup CI environment
         run: cp api/.env.ci api/.env.local
@@ -36,7 +43,6 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    # deploy will only run when build ran (build already gated by merged check)
     steps:
       - name: Download Build
         uses: actions/download-artifact@v5
