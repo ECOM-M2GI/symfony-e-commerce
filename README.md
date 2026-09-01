@@ -51,7 +51,21 @@ php bin/console doctrine:fixtures:load
 
 ## Mise en prod
 
-test
+### API Website
+Pour le site de l'API, il faut modifier le dossier racine du site dans infomaniak pour que ce /public, où se trouve le fichier index.php, et ajouter un fichier .htaccess avec la config minimale suivante : 
+```
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+```
+
+### Frontend Website
+
 
 ### JWT
 

@@ -4,7 +4,7 @@ on:
     tags:
       - 'frontend-*'
 env:
-  API_URL: https://annonces-api.babolat-loic.fr
+  API_URL: https://ecom-api.babolat-loic.fr
 
 jobs:
   build:
