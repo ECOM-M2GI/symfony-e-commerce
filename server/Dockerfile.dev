@@ -21,7 +21,7 @@ RUN mkdir -p /var/www/api/var/cache /var/www/api/var/log \
     && chown -R www-data:www-data /var/www/api/var \
     && chmod -R 775 /var/www/api/var
 
-COPY server/apache.conf /etc/apache2/sites-enabled/000-default.conf
+COPY server/apache-dev.conf /etc/apache2/sites-enabled/000-default.conf
 
 WORKDIR /var/www
 

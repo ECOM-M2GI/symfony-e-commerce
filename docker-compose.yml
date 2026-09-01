@@ -14,7 +14,7 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mariadb:/var/lib/mariadb/data
+      - mariadb:/var/lib/mysql  # ✅
     healthcheck:
       test: [ "CMD-SHELL", "mysqladmin ping -h localhost -u root -p${LOCAL_DB_ROOT_PASSWORD:-rootpassword}" ]
       interval: 5s
@@ -39,6 +39,9 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
+    volumes:
+      - ./api:/var/www/api:delegated  # ← Persiste le code et les tokens JWT
+      - vendor-prod:/var/www/api/vendor  # ← Cache Composer
 
   frontend-dev:
     build:
@@ -50,7 +53,7 @@ services:
     ports:
       - "4200:4200"
 
-  # Tu pourrais me générer un dockerfile.dev pour le dev 
+  # Tu pourrais me générer un dockerfile.dev pour le dev
   webserver-dev:
     build:
       context: .
@@ -76,3 +79,4 @@ volumes:
   mariadb:
   vendor-dev:
   node_modules_dev:
+  vendor-prod:
