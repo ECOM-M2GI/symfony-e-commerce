@@ -77,6 +77,7 @@ export class VendorComponent implements OnInit {
   }
 
   triggerEdit(product: ProductModel) {
+    console.log(product)
     this.editProductComponent()?.resetForm();
     this.editingProduct.set(product);
     this.setActiveTab('edit-product');

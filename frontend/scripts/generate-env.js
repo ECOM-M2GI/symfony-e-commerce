@@ -16,6 +16,3 @@ const envFileContent = `export const environment = ${JSON.stringify(environment,
 // Write to the environment.ts file
 const envFilePath = path.join(__dirname, '../src/app/common/environment.ts');
 fs.writeFileSync(envFilePath, envFileContent);
-
-console.log('Environment configuration generated successfully');
-console.log('Environment values:', environment);

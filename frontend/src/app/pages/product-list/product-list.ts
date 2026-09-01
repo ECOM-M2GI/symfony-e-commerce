@@ -184,7 +184,7 @@ export class ProductList implements OnInit {
   updateFilter(key: keyof FilterState, value: any) {
     // Reset page to 1 when changing filters or sorting (except when updating page itself)
     const shouldResetPage = key !== 'page';
-    
+
     this.filters.update((current) => ({
       ...current,
       [key]: value,
@@ -204,7 +204,6 @@ export class ProductList implements OnInit {
 
   chgePage(number: number) {
     const newPage = Number.parseInt((this.filters().page as any)) + number;
-    console.log(typeof this.filters().page);
     this.updateFilter('page', newPage);
     this.pushFiltersToUrl();
   }

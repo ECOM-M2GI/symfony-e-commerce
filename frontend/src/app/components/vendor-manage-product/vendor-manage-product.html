@@ -131,7 +131,7 @@
                 formControlName="price"
                 [id]="fieldNames()?.price"
                 min="0.01"
-                step="0.01"
+                step="0.1"
               />
               <span class="join-item bg-base-200 px-4 flex items-center text-sm">€</span>
             </div>
@@ -261,12 +261,13 @@
             <div class="join w-full">
               <input
                 type="number"
-                placeholder="0.00"
+                placeholder="0"
                 class="input placeholder:text-gray-500 input-bordered join-item flex-1"
                 formControlName="shipping_fee"
                 [id]="fieldNames()?.shipping_fee"
                 min="0"
-                step="0.01"
+                step="0.1"
+                [required]="productForm.get('delivery_mode')?.value === 'by_mail'"
                 [disabled]="productForm.get('delivery_mode')?.value !== 'by_mail'"
               />
               <span class="join-item bg-base-200 px-4 flex items-center text-sm">€</span>

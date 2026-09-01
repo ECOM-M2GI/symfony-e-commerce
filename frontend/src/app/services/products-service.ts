@@ -146,9 +146,7 @@ export class ProductsService {
       transformedPayload.image_url = "https://placehold.co/600x400";
     }
 
-    console.log("payload: ");
     Object.keys(payload).forEach(key => {
-      console.log(key, ': ', payload[key as keyof typeof payload]);
     });
 
 

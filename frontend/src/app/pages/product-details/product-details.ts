@@ -66,7 +66,6 @@ export class ProductDetailsComponent implements OnInit {
     // In a real app, you'd have a getProductById method
     this.productsService.getProduct(productId).subscribe({
       next: (product) => {
-        console.log('test1')
         this.product.set(product);
         this.wishlistService.getWishlist().subscribe({
           next: (wishlist) => {

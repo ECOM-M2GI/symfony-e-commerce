@@ -78,6 +78,9 @@ export class VendorManageProduct implements OnInit {
 
   ngOnInit(): void {
     if (this.editProductData()) {
+      if (this.editProductData()!.shipping_fee === null && this.editProductData()!.delivery_mode === 'by_mail') {
+        this.editProductData()!.shipping_fee = 0;
+      }
       for (const key in this.productForm?.controls) {
         if (this.editProductData()![key as keyof ProductModel] !== undefined) {
           this.productForm!.controls[key as keyof ProductModelRequest]!.setValue(

@@ -43,8 +43,5 @@ export function isTokenExpired(token: string | null): boolean {
 }
 
 export function formDataToJson(formData: FormData): { [key: string]: any } {
-  formData.forEach((value, key) => {
-    console.log(`${key}: ${typeof value}`);
-  });
   return Object.fromEntries(formData.entries());
 }
