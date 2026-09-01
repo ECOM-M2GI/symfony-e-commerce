@@ -1,5 +1,19 @@
 # IM2AG-e-commerce
 
+## Le projet
+
+Le projet ECOM est un projet d'application e-commerce qui nous a été demandé de faire comme premier projet de l'année de Master 2 Génie Informatique à L'UGA.
+
+Nous avons fais en groupe un projet de site de vente de location, que nous avons appelé Ebey, vous pouvez trouver le code source de ce projet initial au lien suivant : https://gitlab.com/TxMat/im2ag-e-commerce.git.
+Pour ce projet nous avons utilisé les technologies Django pour créer une API et Angular pour gérer le front-end et les appels API.
+
+Cependant, je voulais héberger ce projet sur mon hébergeur infomaniak, mais je ne peux héberger que des applications PHP. J'ai donc décidé de faire le passage vers Symfony, ce qui m'a permis d'apprendre tout en rendant ce projet accessible sur mon hébergeur.
+
+L'API est donc actuellement faite en Symfony et le front-end toujours avec Angular.
+Vous pouvez trouver le site héberger et utilisable au lien suivant : https://ecom.babolat-loic.fr/
+
+Il y a quelque différence avec le projet initial, j'ai par exemple ajouté un système de pagination dans la page de recherche et j'ai implémenté l'authentification avec les tokens JWT. J'ai également retiré la fonctionnalité d'ajout d'image, c'est-à-dire que les utilisateurs ne peuvent plus ajouter d'images pour leurs produits, j'ai fais cela par gain de temps.
+
 ## Docker
 
 ### Getting started on dev mode
@@ -48,31 +62,3 @@ php bin/console doctrine:schema:update --force
 ```bash
 php bin/console doctrine:fixtures:load
 ```
-
-## Mise en prod
-
-### API Website
-Pour le site de l'API, il faut modifier le dossier racine du site dans infomaniak pour que ce /public, où se trouve le fichier index.php, et ajouter un fichier .htaccess avec la config minimale suivante : 
-```
-SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
-
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php [QSA,L]
-</IfModule>
-```
-
-### Frontend Website
-
-
-### JWT
-
-#### Remettre un timeout sur le token dans api/config/packages/lexik_jwt_authentication.yaml
-
-#### Ajouter la configuration nécessaire pour apache : [Doc Symfony](https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html#important-note-for-apache-users)
-
-#### Refaire le JWT avant la mise en prod avec une nouvelle passphrase, en preprod c'est password
-
-https://symfony.com/bundles/LexikJWTAuthenticationBundle/current/index.html#generate-the-ssl-keys
