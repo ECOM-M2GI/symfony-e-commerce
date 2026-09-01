@@ -4,7 +4,7 @@
 
 Le projet ECOM est un projet d'application e-commerce qui nous a été demandé de faire comme premier projet de l'année de Master 2 Génie Informatique à L'UGA.
 
-Nous avons fais en groupe un projet de site de vente de location, que nous avons appelé Ebey, vous pouvez trouver le code source de ce projet initial au lien suivant : https://gitlab.com/TxMat/im2ag-e-commerce.git.
+Nous avons fais en groupe un projet de site d'achat et vente de produit d'occasion, que nous avons appelé Ebey, vous pouvez trouver le code source de ce projet initial au lien suivant : https://gitlab.com/TxMat/im2ag-e-commerce.git.
 Pour ce projet nous avons utilisé les technologies Django pour créer une API et Angular pour gérer le front-end et les appels API.
 
 Cependant, je voulais héberger ce projet sur mon hébergeur infomaniak, mais je ne peux héberger que des applications PHP. J'ai donc décidé de faire le passage vers Symfony, ce qui m'a permis d'apprendre tout en rendant ce projet accessible sur mon hébergeur.
